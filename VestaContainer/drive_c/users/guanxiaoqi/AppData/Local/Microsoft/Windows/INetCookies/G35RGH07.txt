@@ -1,0 +1,9 @@
+sf_mirror_attempt
+npppluginmgr:ixpeering:xml/plugins.zip
+downloads.sourceforge.net/
+0
+2613746560
+31285890
+1422097250
+31285890
+*

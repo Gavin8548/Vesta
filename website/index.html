@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="i18n-pending">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#07080c" />
+  <title data-i18n="meta.title">Vesta — Mac 上的 Windows 游戏与应用极致体验</title>
+  <meta name="description" data-i18n="meta.description" data-i18n-attr="content" content="专为 Apple Silicon 设计的极简启动器。一键运行 .exe，管理 DXVK 与 D3DMetal 预设，并挂载本机 CrossOver 或 Wine。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a84ff'/%3E%3Cpath d='M16 6.5c1.6 3.2 1.5 5-.2 6.8 2.8-.6 5.4 1.2 5.4 4.4a5.2 5.2 0 1 1-10.4 0c0-3.2 2.6-5 5.4-4.4C14.5 11.5 14.4 9.7 16 6.5z' fill='white'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: [
+              "-apple-system",
+              "BlinkMacSystemFont",
+              "SF Pro Display",
+              "SF Pro Text",
+              "PingFang SC",
+              "Hiragino Sans",
+              "Hiragino Kaku Gothic ProN",
+              "Apple SD Gothic Neo",
+              "Noto Sans CJK SC",
+              "Segoe UI",
+              "sans-serif"
+            ]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --blue: #0a84ff;
+      --line: rgba(255, 255, 255, 0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(980px 560px at 8% -8%, rgba(10, 132, 255, 0.22), transparent 56%),
+        radial-gradient(760px 480px at 96% 0%, rgba(94, 92, 230, 0.16), transparent 50%),
+        radial-gradient(680px 420px at 70% 110%, rgba(10, 132, 255, 0.1), transparent 46%),
+        #07080c;
+      color: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans", "Apple SD Gothic Neo", sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html.i18n-pending body { opacity: 0; }
+    body { opacity: 1; transition: opacity 0.25s ease; }
+
+    #content { transition: opacity 0.18s ease; }
+    #content.is-fading { opacity: 0.42; }
+
+    ::selection { background: rgba(10, 132, 255, 0.35); }
+
+    section[id], footer[id] { scroll-margin-top: 104px; }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(22px) saturate(1.6);
+      -webkit-backdrop-filter: blur(22px) saturate(1.6);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 24px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    .rim { position: relative; }
+    .rim::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: inherit;
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.08) 32%, rgba(10, 132, 255, 0.45) 68%, rgba(255, 255, 255, 0.05));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .grad-text {
+      background: linear-gradient(105deg, #9fd4ff 0%, #eaf4ff 42%, #6eb6ff 78%, #ffffff 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: sheen 9s ease-in-out infinite;
+    }
+
+    @keyframes sheen {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, #4aa3ff 0%, #0a84ff 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 10px 28px rgba(10, 132, 255, 0.38);
+    }
+    .btn-primary:hover { filter: brightness(1.06); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 14px 34px rgba(10, 132, 255, 0.48); }
+    .btn-primary::after,
+    .btn-amber::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.38), transparent 70%);
+      transform: translateX(-130%);
+    }
+    .btn-primary:hover::after,
+    .btn-amber:hover::after { transform: translateX(130%); transition: transform 0.7s ease; }
+
+    .btn-amber {
+      position: relative;
+      overflow: hidden;
+      color: #1d1300;
+      background: linear-gradient(180deg, #ffe28a 0%, #ffb340 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 26px rgba(255, 179, 64, 0.28);
+    }
+    .btn-amber:hover { filter: brightness(1.04); }
+
+    .nav-link { position: relative; color: rgba(255, 255, 255, 0.72); }
+    .nav-link:hover { color: white; }
+    .nav-link[aria-current="true"] { color: white; }
+    .nav-link[aria-current="true"]::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -10px;
+      height: 2px;
+      border-radius: 99px;
+      background: #0a84ff;
+    }
+
+    #hero-spot {
+      background: radial-gradient(520px circle at var(--mx, 70%) var(--my, 30%), rgba(10, 132, 255, 0.16), transparent 60%);
+    }
+
+    #stage {
+      transform: rotateX(0deg) rotateY(0deg);
+      transition: transform 0.45s ease;
+      transform-style: preserve-3d;
+    }
+
+    .menubar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 28px;
+      padding: 0 14px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.78);
+      background: rgba(28, 28, 30, 0.78);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .light { width: 11px; height: 11px; border-radius: 99px; box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.25); }
+    .light-r { background: #ff5f57; }
+    .light-y { background: #febc2e; }
+    .light-g { background: #28c840; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+    }
+    .tag-dx { color: #ffd60a; background: rgba(255, 214, 10, 0.12); }
+    .tag-d3 { color: #64d2ff; background: rgba(100, 210, 255, 0.12); }
+    .tag-mt { color: #ebebf5; background: rgba(255, 255, 255, 0.1); }
+
+    .pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 99px;
+      background: #30d158;
+      box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.7);
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      70% { box-shadow: 0 0 0 7px rgba(48, 209, 88, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0); }
+    }
+
+    .acc-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s ease;
+    }
+    .acc-item.open .acc-panel { grid-template-rows: 1fr; }
+    .acc-panel > div { overflow: hidden; }
+    .acc-item.open .chev { transform: rotate(180deg); }
+
+    dialog {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      width: min(520px, calc(100% - 2rem));
+    }
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(10px);
+    }
+
+    .sheet-panel {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+        rgba(14, 16, 24, 0.98);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 30px 80px rgba(0, 0, 0, 0.55);
+    }
+
+    .menu-solid {
+      background: rgba(18, 20, 28, 0.94);
+      backdrop-filter: blur(24px) saturate(1.5);
+      -webkit-backdrop-filter: blur(24px) saturate(1.5);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 24px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+      #content.is-fading { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="hidden" aria-hidden="true">
+    <symbol id="i-flame" viewBox="0 0 32 32">
+      <path fill="currentColor" d="M16 5c1.8 3.6 1.7 5.6-.2 7.6 3.2-.7 6.1 1.4 6.1 5 0 3.6-2.7 6.4-5.9 6.4S10 21.2 10 17.6c0-3.6 2.9-5.7 6.1-5-.2-2-.1-4-.1-7.6z"/>
+    </symbol>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 4v10"/><path d="M8 10l4 4 4-4"/><path d="M5 18h14"/>
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>
+    </symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9l6 6 6-6"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12.5l4.2 4.2L19 7.5"/>
+    </symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2h7.5A2.5 2.5 0 0 1 21 9.5v8A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5v-10z"/>
+    </symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 3L5 14h7l-1 7 8-11h-7l1-7z"/>
+    </symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/>
+    </symbol>
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.4"/><path d="M7 17l3.2-3.2a1.2 1.2 0 0 1 1.7 0L16.5 18"/>
+    </symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12h4l2.2-5 3.6 10L15.5 12H21"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l7 3v6c0 4.5-2.8 7.4-7 9-4.2-1.6-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M4 7h16M4 12h16M4 17h16"/>
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M6 6l12 12M18 6L6 18"/>
+    </symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 5h5v5"/><path d="M19 5l-8 8"/><path d="M17 13.5V18a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h4.5"/>
+    </symbol>
+  </svg>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+
+  <div id="content">
+    <div class="sticky top-3 z-40 px-4">
+      <header class="glass rim mx-auto flex max-w-6xl items-center gap-3 rounded-2xl px-3 py-2 sm:px-4">
+        <a href="#top" class="flex shrink-0 items-center gap-2.5 rounded-xl px-1.5 py-1">
+          <span class="grid h-8 w-8 place-items-center rounded-lg bg-[#0a84ff] text-white shadow-[0_6px_16px_rgba(10,132,255,0.45)]">
+            <svg class="h-4 w-4" aria-hidden="true"><use href="#i-flame"/></svg>
+          </span>
+          <span class="text-[15px] font-semibold tracking-tight">Vesta</span>
+        </a>
+
+        <nav class="ml-4 hidden items-center gap-6 text-sm lg:flex" data-i18n="nav.primary" data-i18n-attr="aria-label">
+          <a class="nav-link" href="#features" data-i18n="nav.features">功能特性</a>
+          <a class="nav-link" href="#guide" data-i18n="nav.guide">使用教程</a>
+          <a class="nav-link" href="#pricing" data-i18n="nav.pricing">售价与版本</a>
+          <a class="nav-link" href="#faq" data-i18n="nav.faq">常见问题</a>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-2">
+          <div id="lang-wrap" class="relative">
+            <button id="lang-btn" type="button" class="glass rim inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm text-white/90 hover:bg-white/10" aria-haspopup="listbox" aria-expanded="false" data-i18n="a11y.lang" data-i18n-attr="aria-label">
+              <svg class="h-4 w-4 text-[#8ecdff]" aria-hidden="true"><use href="#i-layers"/></svg>
+              <span id="lang-current">中文 (简体)</span>
+              <svg class="h-3.5 w-3.5 text-white/60" aria-hidden="true"><use href="#i-chev"/></svg>
+            </button>
+            <div id="lang-menu" role="listbox" hidden class="menu-solid rim absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl p-1.5">
+              <button type="button" role="option" data-lang="zh" class="lang-opt flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-white/10">中文 (简体)<svg class="mark h-4 w-4 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg></button>
+              <button type="button" role="option" data-lang="en" class="lang-opt flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-white/10">English<svg class="mark h-4 w-4 text-[#8ecdff] opacity-0" aria-hidden="true"><use href="#i-check"/></svg></button>
+              <button type="button" role="option" data-lang="ja" class="lang-opt flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-white/10">日本語<svg class="mark h-4 w-4 text-[#8ecdff] opacity-0" aria-hidden="true"><use href="#i-check"/></svg></button>
+              <button type="button" role="option" data-lang="ko" class="lang-opt flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-white/10">한국어<svg class="mark h-4 w-4 text-[#8ecdff] opacity-0" aria-hidden="true"><use href="#i-check"/></svg></button>
+              <button type="button" role="option" data-lang="fr" class="lang-opt flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-white/10">Français<svg class="mark h-4 w-4 text-[#8ecdff] opacity-0" aria-hidden="true"><use href="#i-check"/></svg></button>
+              <button type="button" role="option" data-lang="es" class="lang-opt flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-white/10">Español<svg class="mark h-4 w-4 text-[#8ecdff] opacity-0" aria-hidden="true"><use href="#i-check"/></svg></button>
+            </div>
+          </div>
+
+          <a data-download href="#download" class="btn-primary hidden items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white sm:inline-flex">
+            <svg class="h-4 w-4" aria-hidden="true"><use href="#i-download"/></svg>
+            <span data-i18n="nav.download">下载 Vesta</span>
+          </a>
+
+          <button id="menu-btn" type="button" class="grid h-10 w-10 place-items-center rounded-full text-white/90 hover:bg-white/10 lg:hidden" aria-expanded="false" aria-controls="mobile-panel">
+            <svg class="h-5 w-5" aria-hidden="true"><use href="#i-menu"/></svg>
+            <span class="sr-only" data-i18n="nav.open">打开菜单</span>
+          </button>
+        </div>
+      </header>
+
+      <div id="mobile-panel" hidden class="glass rim mx-auto mt-2 max-w-6xl rounded-2xl p-3 lg:hidden">
+        <div class="flex flex-col gap-1 text-sm">
+          <a class="rounded-xl px-3 py-3 text-white/85 hover:bg-white/10" href="#features" data-i18n="nav.features">功能特性</a>
+          <a class="rounded-xl px-3 py-3 text-white/85 hover:bg-white/10" href="#guide" data-i18n="nav.guide">使用教程</a>
+          <a class="rounded-xl px-3 py-3 text-white/85 hover:bg-white/10" href="#pricing" data-i18n="nav.pricing">售价与版本</a>
+          <a class="rounded-xl px-3 py-3 text-white/85 hover:bg-white/10" href="#faq" data-i18n="nav.faq">常见问题</a>
+          <a data-download href="#download" class="btn-primary mt-1 inline-flex items-center justify-center gap-2 rounded-xl px-3 py-3 font-semibold text-white">
+            <svg class="h-4 w-4" aria-hidden="true"><use href="#i-download"/></svg>
+            <span data-i18n="nav.download">下载 Vesta</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <main id="top">
+      <section id="hero" class="relative overflow-hidden px-4 pb-8 pt-16 sm:pt-24">
+        <div id="hero-spot" class="pointer-events-none absolute inset-0"></div>
+        <div class="relative mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+          <div>
+            <p class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/75">
+              <span class="h-1.5 w-1.5 rounded-full bg-[#30d158]"></span>
+              <span data-i18n="hero.eyebrow">为 Apple Silicon 打造</span>
+            </p>
+            <h1 class="max-w-xl text-4xl font-semibold leading-[1.12] tracking-tight sm:text-5xl lg:text-[52px]">
+              <span class="whitespace-pre-line" data-i18n="hero.titleA">Mac 上的 Windows
+游戏与应用</span>
+              <span class="grad-text mt-1 block" data-i18n="hero.titleB">极致体验</span>
+            </h1>
+            <p class="mt-5 max-w-xl text-base leading-relaxed text-white/68 sm:text-lg" data-i18n="hero.subtitle">专为 Apple Silicon 设计的极简启动器，一键运行 .exe，性能预设与美化管理。</p>
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+              <a data-download href="#download" class="btn-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white">
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#i-download"/></svg>
+                <span data-i18n="hero.download">免费下载 macOS 版</span>
+              </a>
+              <a href="#guide" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                <span data-i18n="hero.guide">查看环境配置指引</span>
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </a>
+            </div>
+            <ul class="mt-8 flex flex-wrap gap-2 text-xs text-white/70">
+              <li class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5" data-i18n="hero.pill1">纯本地运行</li>
+              <li class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5" data-i18n="hero.pill2">不上传私人文件</li>
+              <li class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5" data-i18n="hero.pill3">M1 到 M4 全系列</li>
+            </ul>
+          </div>
+
+          <div id="hero-visual" class="[perspective:1400px]">
+            <div id="stage" class="rim overflow-hidden rounded-[22px] bg-[#1c1c1e]/90 shadow-[0_40px_80px_rgba(0,0,0,0.45)]" data-i18n="mock.label" data-i18n-attr="aria-label">
+              <div class="menubar">
+                <span class="mr-1 font-semibold tracking-tight text-white">Vesta</span>
+                <span data-i18n="menu.file">文件</span>
+                <span data-i18n="menu.edit">编辑</span>
+                <span class="hidden sm:inline" data-i18n="menu.view">显示</span>
+                <span class="hidden sm:inline" data-i18n="menu.window">窗口</span>
+                <span class="hidden md:inline" data-i18n="menu.help">帮助</span>
+                <span class="ml-auto tabular-nums text-white/80" id="menu-clock">22:17</span>
+              </div>
+              <div class="flex items-center gap-2 border-b border-white/10 px-3 py-2.5">
+                <span class="light light-r"></span>
+                <span class="light light-y"></span>
+                <span class="light light-g"></span>
+                <div class="mx-auto flex w-full max-w-xs items-center gap-2 rounded-lg bg-black/30 px-3 py-1.5 text-xs text-white/45">
+                  <span data-i18n="mock.search">搜索游戏或应用</span>
+                </div>
+              </div>
+              <div class="grid min-h-[390px] grid-cols-1 sm:grid-cols-[148px_minmax(0,1fr)]">
+                <aside class="hidden flex-col gap-1 border-white/10 p-3 sm:flex sm:border-r">
+                  <p class="rounded-lg bg-white/10 px-2.5 py-2 text-[13px] font-medium" data-i18n="mock.library">应用 / 游戏库</p>
+                  <p class="rounded-lg px-2.5 py-2 text-[13px] text-white/60" data-i18n="mock.games">游戏大作</p>
+                  <p class="rounded-lg px-2.5 py-2 text-[13px] text-white/60" data-i18n="mock.tools">实用工具</p>
+                  <div class="mt-auto rounded-xl border border-white/10 bg-black/25 p-3">
+                    <p class="text-[10px] uppercase tracking-wider text-white/40" data-i18n="mock.hw">硬件</p>
+                    <p class="mt-1 text-xs font-medium leading-snug">Apple M3 Pro<br />18 GB</p>
+                    <div class="mt-3 flex items-end justify-between">
+                      <div>
+                        <p class="text-[10px] text-white/40" data-i18n="mock.fpsLabel">帧率</p>
+                        <p class="text-lg font-semibold tabular-nums leading-none"><span id="fps">118</span></p>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-[10px] text-white/40" data-i18n="mock.gpuLabel">图形</p>
+                        <p class="text-sm font-medium tabular-nums">42%</p>
+                      </div>
+                    </div>
+                  </div>
+                </aside>
+                <div class="grid gap-3 p-3 sm:grid-cols-[1.15fr_0.85fr]">
+                  <article class="relative min-h-[220px] overflow-hidden rounded-2xl border border-white/10">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(255,196,110,0.5),transparent_36%),radial-gradient(circle_at_80%_80%,rgba(140,48,22,0.55),transparent_42%),linear-gradient(165deg,#3a2a16,#100e0c)]"></div>
+                    <div class="relative flex h-full flex-col justify-between p-4">
+                      <span class="tag tag-dx w-fit">DXVK</span>
+                      <div>
+                        <h2 class="text-xl font-semibold tracking-tight">黑神话：悟空</h2>
+                        <p class="mt-1 text-xs text-white/70"><span data-i18n="mock.game">游戏</span> · <span data-i18n="mock.idle">未运行</span></p>
+                      </div>
+                    </div>
+                  </article>
+                  <div class="flex flex-col gap-3">
+                    <article class="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(10,132,255,0.2),rgba(10,132,255,0.05))] p-3.5">
+                      <div class="flex items-center justify-between">
+                        <span class="tag tag-d3">D3DMetal</span>
+                        <span class="pulse" aria-hidden="true"></span>
+                      </div>
+                      <div>
+                        <h3 class="font-semibold">Steam</h3>
+                        <p class="mt-1 text-xs text-[#7dffa8]"><span data-i18n="mock.tool">工具</span> · <span data-i18n="mock.running">运行中</span></p>
+                      </div>
+                    </article>
+                    <article class="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+                      <span class="tag tag-mt w-fit">Metal</span>
+                      <div>
+                        <h3 class="font-semibold">Notepad++</h3>
+                        <p class="mt-1 text-xs text-white/55"><span data-i18n="mock.tool">工具</span> · <span data-i18n="mock.ready">已导入</span></p>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="px-4 py-20">
+        <div class="mx-auto max-w-6xl">
+          <div class="max-w-2xl">
+            <p class="text-sm font-medium text-[#8ecdff]" data-i18n="feat.eyebrow">核心亮点</p>
+            <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl" data-i18n="feat.title">把 Windows 软件，收成一台 Mac 上的游戏库</h2>
+            <p class="mt-4 text-white/65" data-i18n="feat.subtitle">Vesta 负责导入、预设、美化与监控。兼容引擎继续用你已经信任的 CrossOver 或 Wine。</p>
+          </div>
+          <div class="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <article class="rim glass rounded-3xl p-6 transition duration-300 hover:-translate-y-1">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-[#0a84ff]/15 text-[#8ecdff]"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-folder"/></svg></span>
+              <h3 class="mt-5 text-lg font-semibold" data-i18n="feat.1.t">零配置极速导入</h3>
+              <p class="mt-2 text-sm leading-relaxed text-white/65" data-i18n="feat.1.d">拖入或选择 .exe，Vesta 会解析路径、依赖和分类，几乎不用手工配置容器。</p>
+            </article>
+            <article class="rim glass rounded-3xl p-6 transition duration-300 hover:-translate-y-1">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-[#0a84ff]/15 text-[#8ecdff]"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-bolt"/></svg></span>
+              <h3 class="mt-5 text-lg font-semibold" data-i18n="feat.2.t">极致性能调优</h3>
+              <p class="mt-2 text-sm leading-relaxed text-white/65" data-i18n="feat.2.d">按应用一键套用图形预设，直接启用 DXVK 或 D3DMetal 转译，让 Apple Silicon 跑得更稳。</p>
+            </article>
+            <article class="rim glass rounded-3xl p-6 transition duration-300 hover:-translate-y-1">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-[#0a84ff]/15 text-[#8ecdff]"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-layers"/></svg></span>
+              <h3 class="mt-5 text-lg font-semibold" data-i18n="feat.3.t">引擎自由挂载 (BYOE)</h3>
+              <p class="mt-2 text-sm leading-relaxed text-white/65" data-i18n="feat.3.d">无缝关联本机 CrossOver，或免费开源的 Wine / Porting Kit。引擎你来选，库由 Vesta 管理。</p>
+            </article>
+            <article class="rim glass rounded-3xl p-6 transition duration-300 hover:-translate-y-1">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-[#0a84ff]/15 text-[#8ecdff]"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-image"/></svg></span>
+              <h3 class="mt-5 text-lg font-semibold" data-i18n="feat.4.t">游戏库视觉美化</h3>
+              <p class="mt-2 text-sm leading-relaxed text-white/65" data-i18n="feat.4.d">自动整理海报、高清壁纸和分类。游戏、工具与办公软件各自成组，库面清爽可扫。</p>
+            </article>
+            <article class="rim glass rounded-3xl p-6 transition duration-300 hover:-translate-y-1">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-[#0a84ff]/15 text-[#8ecdff]"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-activity"/></svg></span>
+              <h3 class="mt-5 text-lg font-semibold" data-i18n="feat.5.t">极简硬件监控</h3>
+              <p class="mt-2 text-sm leading-relaxed text-white/65" data-i18n="feat.5.d">在启动器里查看 M 系列芯片占用和渲染帧率，判断该用哪一套预设，不必再开监控软件。</p>
+            </article>
+            <article class="rim glass rounded-3xl p-6 transition duration-300 hover:-translate-y-1">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-[#0a84ff]/15 text-[#8ecdff]"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-shield"/></svg></span>
+              <h3 class="mt-5 text-lg font-semibold" data-i18n="feat.6.t">100% 隐私安全</h3>
+              <p class="mt-2 text-sm leading-relaxed text-white/65" data-i18n="feat.6.d">纯本地运行。exe、存档和海报都留在这台 Mac 上，Vesta 不上传任何私有文件。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="guide" class="px-4 py-12">
+        <div class="mx-auto max-w-6xl">
+          <div class="max-w-2xl">
+            <p class="text-sm font-medium text-[#8ecdff]" data-i18n="guide.eyebrow">快速上手</p>
+            <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl" data-i18n="guide.title">三步，从下载到开玩</h2>
+            <p class="mt-4 text-white/65" data-i18n="guide.subtitle">先装 Vesta，再绑定一个兼容环境。CrossOver 最稳，Wine 与 Porting Kit 可以免费起步。</p>
+          </div>
+          <div class="mt-10 grid gap-4 lg:grid-cols-3">
+            <article class="rim glass flex flex-col rounded-3xl p-6">
+              <p class="text-sm font-semibold tracking-[0.18em] text-[#8ecdff]">01</p>
+              <h3 class="mt-4 text-xl font-semibold" data-i18n="step.1.t">下载并安装 Vesta 客户端</h3>
+              <p class="mt-3 text-sm leading-relaxed text-white/65" data-i18n="step.1.d">获取 macOS 版并拖入「应用程序」。Vesta 只是启动器，安装本身不替换系统组件。</p>
+            </article>
+            <article class="rim glass relative flex flex-col rounded-3xl p-6 ring-1 ring-[#ffb340]/30">
+              <p class="text-sm font-semibold tracking-[0.18em] text-[#ffd60a]">02</p>
+              <h3 class="mt-4 text-xl font-semibold" data-i18n="step.2.t">绑定兼容环境</h3>
+              <p class="mt-3 text-sm leading-relaxed text-white/65" data-i18n="step.2.d">强烈推荐 CrossOver，游戏和常用 Windows 软件都更稳。Vesta 会挂载你本机已经安装的引擎。</p>
+              <a class="btn-amber mt-5 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold" href="https://www.codeweavers.com/crossover" target="_blank" rel="noopener noreferrer">
+                <span data-i18n="step.2.cta">获取 CrossOver 专属优惠</span>
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#i-ext"/></svg>
+              </a>
+              <p class="mt-3 text-xs leading-relaxed text-white/50" data-i18n="step.2.alt">也可以免费使用 Wine 或 Porting Kit，Vesta 同样能够识别并调用。</p>
+              <div class="mt-3 flex flex-wrap gap-3 text-xs">
+                <a class="text-[#8ecdff] hover:underline" href="https://www.winehq.org/" target="_blank" rel="noopener noreferrer" data-i18n="step.2.wine">Wine 官网</a>
+                <a class="text-[#8ecdff] hover:underline" href="https://www.portingkit.com/" target="_blank" rel="noopener noreferrer" data-i18n="step.2.porting">Porting Kit</a>
+              </div>
+            </article>
+            <article class="rim glass flex flex-col rounded-3xl p-6">
+              <p class="text-sm font-semibold tracking-[0.18em] text-[#8ecdff]">03</p>
+              <h3 class="mt-4 text-xl font-semibold" data-i18n="step.3.t">导入 .exe，一键畅玩</h3>
+              <p class="mt-3 text-sm leading-relaxed text-white/65" data-i18n="step.3.d">把可执行文件放进游戏库，选好 DXVK 或 D3DMetal，然后直接启动。海报和运行状态会留在库里。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="compat" class="px-4 py-16">
+        <div class="mx-auto max-w-6xl">
+          <div class="max-w-2xl">
+            <p class="text-sm font-medium text-[#8ecdff]" data-i18n="compat.eyebrow">兼容性</p>
+            <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl" data-i18n="compat.title">为现在的 Mac 准备</h2>
+            <p class="mt-4 text-white/65" data-i18n="compat.subtitle">Apple Silicon 全系列，加上近几个版本的 macOS。Intel Mac 不在支持范围内。</p>
+          </div>
+          <div class="mt-10 grid gap-4 md:grid-cols-2">
+            <article class="rim glass rounded-3xl p-6">
+              <p class="text-xs uppercase tracking-[0.16em] text-white/40" data-i18n="compat.chip.k">芯片</p>
+              <h3 class="mt-2 text-2xl font-semibold" data-i18n="compat.chip.t">Apple Silicon</h3>
+              <p class="mt-3 text-sm leading-relaxed text-white/65" data-i18n="compat.chip.d">支持 M1、M2、M3、M4 全系列，包括 Pro、Max 与 Ultra。统一内存建议 16 GB 或更高，以便同时容纳系统和 Windows 容器。</p>
+            </article>
+            <article class="rim glass rounded-3xl p-6">
+              <p class="text-xs uppercase tracking-[0.16em] text-white/40" data-i18n="compat.os.k">系统</p>
+              <h3 class="mt-2 text-2xl font-semibold" data-i18n="compat.os.t">macOS Ventura 及更高</h3>
+              <p class="mt-3 text-sm leading-relaxed text-white/65" data-i18n="compat.os.d">支持 macOS Ventura、Sonoma、Sequoia 以及后续版本。请保持系统更新，以便使用较新的 Metal 图形能力。</p>
+            </article>
+          </div>
+          <div class="rim glass mt-4 overflow-hidden rounded-3xl">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[640px] text-left text-sm">
+                <thead class="text-white/45">
+                  <tr class="border-b border-white/10">
+                    <th class="px-6 py-4 font-medium" data-i18n="compat.h1">项目</th>
+                    <th class="px-6 py-4 font-medium" data-i18n="compat.h2">支持范围</th>
+                  </tr>
+                </thead>
+                <tbody class="text-white/85">
+                  <tr class="border-b border-white/10">
+                    <td class="px-6 py-4 text-white/55" data-i18n="compat.r1.k">处理器</td>
+                    <td class="px-6 py-4" data-i18n="compat.r1.v">Apple Silicon M1 / M2 / M3 / M4，含 Pro、Max、Ultra</td>
+                  </tr>
+                  <tr class="border-b border-white/10">
+                    <td class="px-6 py-4 text-white/55" data-i18n="compat.r2.k">操作系统</td>
+                    <td class="px-6 py-4" data-i18n="compat.r2.v">macOS Ventura、Sonoma、Sequoia 及更高版本</td>
+                  </tr>
+                  <tr class="border-b border-white/10">
+                    <td class="px-6 py-4 text-white/55" data-i18n="compat.r3.k">兼容引擎</td>
+                    <td class="px-6 py-4" data-i18n="compat.r3.v">CrossOver（推荐）、Wine、Porting Kit</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 text-white/55" data-i18n="compat.r4.k">图形接口</td>
+                    <td class="px-6 py-4" data-i18n="compat.r4.v">DXVK、D3DMetal、Metal</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" class="px-4 py-12">
+        <div class="mx-auto max-w-6xl">
+          <div class="max-w-2xl">
+            <p class="text-sm font-medium text-[#8ecdff]" data-i18n="price.eyebrow">售价与版本</p>
+            <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl" data-i18n="price.title">先试用，再决定留下</h2>
+            <p class="mt-4 text-white/65" data-i18n="price.subtitle">14 天可以体验完整启动器。以下为 Vesta 客户端授权，不含 CrossOver 等引擎许可。</p>
+          </div>
+          <div class="mt-10 grid items-stretch gap-4 lg:grid-cols-3">
+            <article class="rim glass flex flex-col rounded-3xl p-6">
+              <h3 class="text-lg font-semibold" data-i18n="price.free.name">体验版</h3>
+              <p class="mt-4 text-4xl font-semibold tracking-tight" data-i18n="price.free.price">免费</p>
+              <p class="mt-1 text-sm text-white/50" data-i18n="price.free.unit">14 天完整功能</p>
+              <ul class="mt-6 space-y-3 text-sm text-white/75">
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.1">导入 .exe 与游戏库</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.2">DXVK / D3DMetal 预设</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.3">本地硬件监控</span></li>
+              </ul>
+              <a data-download href="#download" class="mt-8 inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2.5 text-sm font-semibold hover:bg-white/10" data-i18n="price.free.cta">开始试用</a>
+            </article>
+            <article class="rim glass relative flex flex-col rounded-3xl p-6 lg:-translate-y-3">
+              <span class="absolute right-5 top-5 rounded-full bg-[#0a84ff] px-2.5 py-1 text-[11px] font-semibold" data-i18n="price.badge">推荐</span>
+              <h3 class="text-lg font-semibold" data-i18n="price.pro.name">个人版</h3>
+              <p class="mt-4 text-4xl font-semibold tracking-tight" data-i18n="price.pro.price">¥128</p>
+              <p class="mt-1 text-sm text-white/50" data-i18n="price.pro.unit">单台 Mac · 买断</p>
+              <ul class="mt-6 space-y-3 text-sm text-white/75">
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.pro.1">体验版的全部功能</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.pro.2">海报与壁纸美化</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.pro.3">CrossOver / Wine 挂载</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.pro.4">后续兼容性更新</span></li>
+              </ul>
+              <a data-download href="#download" class="btn-primary mt-8 inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold text-white" data-i18n="price.pro.cta">获取个人版</a>
+            </article>
+            <article class="rim glass flex flex-col rounded-3xl p-6">
+              <h3 class="text-lg font-semibold" data-i18n="price.studio.name">专业版</h3>
+              <p class="mt-4 text-4xl font-semibold tracking-tight" data-i18n="price.studio.price">¥268</p>
+              <p class="mt-1 text-sm text-white/50" data-i18n="price.studio.unit">两台 Mac · 买断</p>
+              <ul class="mt-6 space-y-3 text-sm text-white/75">
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.studio.1">个人版的全部功能</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.studio.2">第二台 Mac 授权</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.studio.3">多容器环境来回切换</span></li>
+                <li class="flex gap-2"><svg class="mt-0.5 h-4 w-4 shrink-0 text-[#8ecdff]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.studio.4">新版本优先使用</span></li>
+              </ul>
+              <a data-download href="#download" class="mt-8 inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2.5 text-sm font-semibold hover:bg-white/10" data-i18n="price.studio.cta">获取专业版</a>
+            </article>
+          </div>
+          <p class="mt-5 text-xs text-white/40" data-i18n="price.note">CrossOver 由 CodeWeavers 单独授权，不包含在 Vesta 售价中。Wine 与 Porting Kit 可免费使用。</p>
+        </div>
+      </section>
+
+      <section id="faq" class="px-4 py-16">
+        <div class="mx-auto max-w-3xl">
+          <div class="text-center">
+            <p class="text-sm font-medium text-[#8ecdff]" data-i18n="faq.eyebrow">常见问题</p>
+            <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl" data-i18n="faq.title">开始之前，这几件事说清楚</h2>
+            <p class="mx-auto mt-4 max-w-xl text-white/65" data-i18n="faq.subtitle">引擎、芯片、数据以及以后会不会自带兼容层。</p>
+          </div>
+          <div class="mt-10 space-y-3">
+            <article class="acc-item rim glass rounded-2xl px-5">
+              <h3>
+                <button type="button" class="acc-btn flex w-full items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                  <span class="font-medium" data-i18n="faq.1.q">为什么需要搭配 CrossOver / Wine 使用？</span>
+                  <svg class="chev h-5 w-5 shrink-0 text-white/50 transition" aria-hidden="true"><use href="#i-chev"/></svg>
+                </button>
+              </h3>
+              <div class="acc-panel"><div><p class="pb-5 text-sm leading-relaxed text-white/65" data-i18n="faq.1.a"></p></div></div>
+            </article>
+            <article class="acc-item rim glass rounded-2xl px-5">
+              <h3>
+                <button type="button" class="acc-btn flex w-full items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                  <span class="font-medium" data-i18n="faq.2.q">是否支持 M1 / M2 / M3 / M4 芯片？</span>
+                  <svg class="chev h-5 w-5 shrink-0 text-white/50 transition" aria-hidden="true"><use href="#i-chev"/></svg>
+                </button>
+              </h3>
+              <div class="acc-panel"><div><p class="pb-5 text-sm leading-relaxed text-white/65" data-i18n="faq.2.a"></p></div></div>
+            </article>
+            <article class="acc-item rim glass rounded-2xl px-5">
+              <h3>
+                <button type="button" class="acc-btn flex w-full items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                  <span class="font-medium" data-i18n="faq.3.q">我导入的 .exe 文件和数据安全吗？</span>
+                  <svg class="chev h-5 w-5 shrink-0 text-white/50 transition" aria-hidden="true"><use href="#i-chev"/></svg>
+                </button>
+              </h3>
+              <div class="acc-panel"><div><p class="pb-5 text-sm leading-relaxed text-white/65" data-i18n="faq.3.a"></p></div></div>
+            </article>
+            <article class="acc-item rim glass rounded-2xl px-5">
+              <h3>
+                <button type="button" class="acc-btn flex w-full items-center justify-between gap-4 py-5 text-left" aria-expanded="false">
+                  <span class="font-medium" data-i18n="faq.4.q">今后会推出内置引擎的版本吗？</span>
+                  <svg class="chev h-5 w-5 shrink-0 text-white/50 transition" aria-hidden="true"><use href="#i-chev"/></svg>
+                </button>
+              </h3>
+              <div class="acc-panel"><div><p class="pb-5 text-sm leading-relaxed text-white/65" data-i18n="faq.4.a"></p></div></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="download" class="px-4 pb-20 pt-4">
+        <div class="relative mx-auto max-w-6xl overflow-hidden rounded-[32px]">
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(10,132,255,0.55),transparent_42%),radial-gradient(circle_at_90%_80%,rgba(94,92,230,0.4),transparent_40%),linear-gradient(180deg,#10141d,#07080c)]"></div>
+          <div class="rim relative px-6 py-16 text-center sm:px-12">
+            <p class="text-sm font-medium text-[#c5e4ff]" data-i18n="cta.eyebrow">现在就开始</p>
+            <h2 class="mx-auto mt-3 max-w-2xl text-3xl font-semibold tracking-tight sm:text-5xl" data-i18n="cta.title">让 Windows 游戏和软件，住进你的 Mac</h2>
+            <p class="mx-auto mt-4 max-w-xl text-white/70" data-i18n="cta.subtitle">下载 Vesta，挂载 CrossOver 或免费 Wine，把 .exe 收成一个安静的游戏库。</p>
+            <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a data-download href="#download" class="btn-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white">
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#i-download"/></svg>
+                <span data-i18n="cta.button">免费下载 macOS 版</span>
+              </a>
+              <a href="#compat" class="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm font-semibold hover:bg-white/10" data-i18n="cta.secondary">核对兼容性</a>
+            </div>
+            <p class="mt-4 text-xs text-white/45" data-i18n="cta.note">适用于 Apple Silicon · macOS Ventura 或更高版本</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-white/10 px-4 py-12">
+      <div class="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <span class="grid h-8 w-8 place-items-center rounded-lg bg-[#0a84ff] text-white">
+              <svg class="h-4 w-4" aria-hidden="true"><use href="#i-flame"/></svg>
+            </span>
+            <span class="font-semibold">Vesta</span>
+          </div>
+          <p class="mt-4 max-w-sm text-sm leading-relaxed text-white/55" data-i18n="footer.blurb">Mac 上的 Windows 游戏与应用启动器。本地运行，引擎自选。</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold" data-i18n="footer.product">产品</p>
+          <ul class="mt-3 space-y-2 text-sm text-white/60">
+            <li><a class="hover:text-white" href="#features" data-i18n="nav.features">功能特性</a></li>
+            <li><a class="hover:text-white" href="#guide" data-i18n="nav.guide">使用教程</a></li>
+            <li><a class="hover:text-white" href="#pricing" data-i18n="nav.pricing">售价与版本</a></li>
+            <li><a class="hover:text-white" href="#faq" data-i18n="nav.faq">常见问题</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold" data-i18n="footer.legal">条款与社区</p>
+          <ul class="mt-3 space-y-2 text-sm text-white/60">
+            <li><button type="button" class="hover:text-white" data-modal="terms" data-i18n="footer.terms">服务条款</button></li>
+            <li><button type="button" class="hover:text-white" data-modal="privacy" data-i18n="footer.privacy">隐私政策</button></li>
+            <li><button type="button" class="hover:text-white" data-modal="community" data-i18n="footer.community">社区</button></li>
+          </ul>
+        </div>
+      </div>
+      <p class="mx-auto mt-10 max-w-6xl border-t border-white/10 pt-6 text-xs text-white/40" data-i18n="footer.copy">© 2026 Vesta. 保留所有权利。</p>
+    </footer>
+  </div>
+
+  <dialog id="sheet" class="rounded-3xl">
+    <div class="rim sheet-panel rounded-3xl p-6 sm:p-7">
+      <div class="flex items-start justify-between gap-4">
+        <h2 id="sheet-title" class="text-xl font-semibold tracking-tight"></h2>
+        <button type="button" id="sheet-x" class="grid h-8 w-8 place-items-center rounded-full text-white/70 hover:bg-white/10" data-i18n="sheet.close" data-i18n-attr="aria-label">
+          <svg class="h-4 w-4" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </div>
+      <p id="sheet-body" class="mt-4 whitespace-pre-line text-sm leading-relaxed text-white/70"></p>
+      <div class="mt-6 flex flex-wrap justify-end gap-2">
+        <a id="sheet-guide" href="#guide" class="hidden rounded-full border border-white/15 px-4 py-2 text-sm font-semibold hover:bg-white/10" data-i18n="sheet.guide">查看配置指引</a>
+        <button type="button" id="sheet-close" class="btn-primary rounded-full px-4 py-2 text-sm font-semibold text-white" data-i18n="sheet.close">关闭</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const DOWNLOAD_URL = "";
+
+    const LANGS = [
+      { id: "zh", label: "中文 (简体)", html: "zh-CN", locale: "zh-CN" },
+      { id: "en", label: "English", html: "en", locale: "en-US" },
+      { id: "ja", label: "日本語", html: "ja", locale: "ja-JP" },
+      { id: "ko", label: "한국어", html: "ko", locale: "ko-KR" },
+      { id: "fr", label: "Français", html: "fr", locale: "fr-FR" },
+      { id: "es", label: "Español", html: "es", locale: "es-ES" }
+    ];
+
+    const translations = {
+      zh: {
+        "meta.title": "Vesta — Mac 上的 Windows 游戏与应用极致体验",
+        "meta.description": "专为 Apple Silicon 设计的极简启动器。一键运行 .exe，管理 DXVK 与 D3DMetal 预设，并挂载本机 CrossOver 或 Wine。",
+        "nav.primary": "页面导航",
+        "nav.features": "功能特性",
+        "nav.guide": "使用教程",
+        "nav.pricing": "售价与版本",
+        "nav.faq": "常见问题",
+        "nav.download": "下载 Vesta",
+        "nav.open": "打开菜单",
+        "a11y.lang": "选择语言",
+        "a11y.switched": "语言已切换为中文",
+        "hero.eyebrow": "为 Apple Silicon 打造",
+        "hero.titleA": "Mac 上的 Windows\n游戏与应用",
+        "hero.titleB": "极致体验",
+        "hero.subtitle": "专为 Apple Silicon 设计的极简启动器，一键运行 .exe，性能预设与美化管理。",
+        "hero.download": "免费下载 macOS 版",
+        "hero.guide": "查看环境配置指引",
+        "hero.pill1": "纯本地运行",
+        "hero.pill2": "不上传私人文件",
+        "hero.pill3": "M1 到 M4 全系列",
+        "mock.label": "Vesta 游戏库窗口预览，包含黑神话、Steam 和 Notepad++",
+        "menu.file": "文件",
+        "menu.edit": "编辑",
+        "menu.view": "显示",
+        "menu.window": "窗口",
+        "menu.help": "帮助",
+        "mock.search": "搜索游戏或应用",
+        "mock.library": "应用 / 游戏库",
+        "mock.games": "游戏大作",
+        "mock.tools": "实用工具",
+        "mock.hw": "硬件",
+        "mock.fpsLabel": "帧率",
+        "mock.gpuLabel": "图形",
+        "mock.game": "游戏",
+        "mock.tool": "工具",
+        "mock.running": "运行中",
+        "mock.idle": "未运行",
+        "mock.ready": "已导入",
+        "feat.eyebrow": "核心亮点",
+        "feat.title": "把 Windows 软件，收成一台 Mac 上的游戏库",
+        "feat.subtitle": "Vesta 负责导入、预设、美化与监控。兼容引擎继续用你已经信任的 CrossOver 或 Wine。",
+        "feat.1.t": "零配置极速导入",
+        "feat.1.d": "拖入或选择 .exe，Vesta 会解析路径、依赖和分类，几乎不用手工配置容器。",
+        "feat.2.t": "极致性能调优",
+        "feat.2.d": "按应用一键套用图形预设，直接启用 DXVK 或 D3DMetal 转译，让 Apple Silicon 跑得更稳。",
+        "feat.3.t": "引擎自由挂载 (BYOE)",
+        "feat.3.d": "无缝关联本机 CrossOver，或免费开源的 Wine / Porting Kit。引擎你来选，库由 Vesta 管理。",
+        "feat.4.t": "游戏库视觉美化",
+        "feat.4.d": "自动整理海报、高清壁纸和分类。游戏、工具与办公软件各自成组，库面清爽可扫。",
+        "feat.5.t": "极简硬件监控",
+        "feat.5.d": "在启动器里查看 M 系列芯片占用和渲染帧率，判断该用哪一套预设，不必再开监控软件。",
+        "feat.6.t": "100% 隐私安全",
+        "feat.6.d": "纯本地运行。exe、存档和海报都留在这台 Mac 上，Vesta 不上传任何私有文件。",
+        "guide.eyebrow": "快速上手",
+        "guide.title": "三步，从下载到开玩",
+        "guide.subtitle": "先装 Vesta，再绑定一个兼容环境。CrossOver 最稳，Wine 与 Porting Kit 可以免费起步。",
+        "step.1.t": "下载并安装 Vesta 客户端",
+        "step.1.d": "获取 macOS 版并拖入「应用程序」。Vesta 只是启动器，安装本身不替换系统组件。",
+        "step.2.t": "绑定兼容环境",
+        "step.2.d": "强烈推荐 CrossOver，游戏和常用 Windows 软件都更稳。Vesta 会挂载你本机已经安装的引擎。",
+        "step.2.cta": "获取 CrossOver 专属优惠",
+        "step.2.alt": "也可以免费使用 Wine 或 Porting Kit，Vesta 同样能够识别并调用。",
+        "step.2.wine": "Wine 官网",
+        "step.2.porting": "Porting Kit",
+        "step.3.t": "导入 .exe，一键畅玩",
+        "step.3.d": "把可执行文件放进游戏库，选好 DXVK 或 D3DMetal，然后直接启动。海报和运行状态会留在库里。",
+        "compat.eyebrow": "兼容性",
+        "compat.title": "为现在的 Mac 准备",
+        "compat.subtitle": "Apple Silicon 全系列，加上近几个版本的 macOS。Intel Mac 不在支持范围内。",
+        "compat.chip.k": "芯片",
+        "compat.chip.t": "Apple Silicon",
+        "compat.chip.d": "支持 M1、M2、M3、M4 全系列，包括 Pro、Max 与 Ultra。统一内存建议 16 GB 或更高，以便同时容纳系统和 Windows 容器。",
+        "compat.os.k": "系统",
+        "compat.os.t": "macOS Ventura 及更高",
+        "compat.os.d": "支持 macOS Ventura、Sonoma、Sequoia 以及后续版本。请保持系统更新，以便使用较新的 Metal 图形能力。",
+        "compat.h1": "项目",
+        "compat.h2": "支持范围",
+        "compat.r1.k": "处理器",
+        "compat.r1.v": "Apple Silicon M1 / M2 / M3 / M4，含 Pro、Max、Ultra",
+        "compat.r2.k": "操作系统",
+        "compat.r2.v": "macOS Ventura、Sonoma、Sequoia 及更高版本",
+        "compat.r3.k": "兼容引擎",
+        "compat.r3.v": "CrossOver（推荐）、Wine、Porting Kit",
+        "compat.r4.k": "图形接口",
+        "compat.r4.v": "DXVK、D3DMetal、Metal",
+        "price.eyebrow": "售价与版本",
+        "price.title": "先试用，再决定留下",
+        "price.subtitle": "14 天可以体验完整启动器。以下为 Vesta 客户端授权，不含 CrossOver 等引擎许可。",
+        "price.badge": "推荐",
+        "price.free.name": "体验版",
+        "price.free.price": "免费",
+        "price.free.unit": "14 天完整功能",
+        "price.free.1": "14 天内功能不设限",
+        "price.free.2": "预设、美化、监控与引擎挂载",
+        "price.free.3": "文件与存档只留在本机",
+        "price.free.cta": "开始试用",
+        "price.pro.name": "个人版",
+        "price.pro.price": "¥128",
+        "price.pro.unit": "单台 Mac · 买断",
+        "price.pro.1": "单台 Mac 的永久授权",
+        "price.pro.2": "试用期的全部功能都保留",
+        "price.pro.3": "游戏库、海报与预设持续可用",
+        "price.pro.4": "后续兼容性更新",
+        "price.pro.cta": "获取个人版",
+        "price.studio.name": "专业版",
+        "price.studio.price": "¥268",
+        "price.studio.unit": "两台 Mac · 买断",
+        "price.studio.1": "个人版的全部功能",
+        "price.studio.2": "第二台 Mac 授权",
+        "price.studio.3": "多容器环境来回切换",
+        "price.studio.4": "新版本优先使用",
+        "price.studio.cta": "获取专业版",
+        "price.note": "CrossOver 由 CodeWeavers 单独授权，不包含在 Vesta 售价中。Wine 与 Porting Kit 可免费使用。",
+        "faq.eyebrow": "常见问题",
+        "faq.title": "开始之前，这几件事说清楚",
+        "faq.subtitle": "引擎、芯片、数据以及以后会不会自带兼容层。",
+        "faq.1.q": "为什么需要搭配 CrossOver / Wine 使用？",
+        "faq.1.a": "Vesta 是启动器与游戏库，本身不内置 Windows 兼容引擎。它会挂载你本机的 CrossOver，或免费的 Wine / Porting Kit，再负责 .exe 导入、DXVK 与 D3DMetal 预设、海报和运行状态。想要更稳的游戏和办公体验，建议搭配 CrossOver；若希望零成本起步，Wine 与 Porting Kit 也可以直接调用。",
+        "faq.2.q": "是否支持 M1 / M2 / M3 / M4 芯片？",
+        "faq.2.a": "支持。Vesta 面向全部 Apple Silicon，包括 M1、M2、M3、M4 以及 Pro、Max 和 Ultra。系统支持 macOS Ventura、Sonoma、Sequoia 及更高版本。当前不为 Intel Mac 提供支持。",
+        "faq.3.q": "我导入的 .exe 文件和数据安全吗？",
+        "faq.3.a": "安全。Vesta 在你的 Mac 上纯本地运行。可执行文件、存档、容器和海报缓存都保存在本机，不会上传到服务器，也不会读取与这些软件无关的私人文件。",
+        "faq.4.q": "今后会推出内置引擎的版本吗？",
+        "faq.4.a": "内置引擎在路线图上。在它就绪之前，BYOE 让你继续使用已经信任的 CrossOver 或开源 Wine，不必为了等待而更换用法。现有游戏库、预设和美化都会保留。",
+        "cta.eyebrow": "现在就开始",
+        "cta.title": "让 Windows 游戏和软件，住进你的 Mac",
+        "cta.subtitle": "下载 Vesta，挂载 CrossOver 或免费 Wine，把 .exe 收成一个安静的游戏库。",
+        "cta.button": "免费下载 macOS 版",
+        "cta.secondary": "核对兼容性",
+        "cta.note": "适用于 Apple Silicon · macOS Ventura 或更高版本",
+        "footer.blurb": "Mac 上的 Windows 游戏与应用启动器。本地运行，引擎自选。",
+        "footer.product": "产品",
+        "footer.legal": "条款与社区",
+        "footer.terms": "服务条款",
+        "footer.privacy": "隐私政策",
+        "footer.community": "社区",
+        "footer.copy": "© 2026 Vesta. 保留所有权利。",
+        "sheet.close": "关闭",
+        "sheet.guide": "查看配置指引",
+        "sheet.download.t": "下载 macOS 版",
+        "sheet.download.b": "Vesta 适用于搭载 Apple Silicon 的 Mac，系统需为 macOS Ventura、Sonoma、Sequoia 或更高版本。\n\n安装包发布后，此按钮会直接开始下载。你可以先准备 CrossOver，或使用免费的 Wine / Porting Kit。",
+        "sheet.terms.t": "服务条款",
+        "sheet.terms.b": "Vesta 是运行在 macOS 上的启动器。你需要自行准备 Windows 程序，以及 CrossOver、Wine 或 Porting Kit 等兼容环境。\n\n客户端授权只覆盖 Vesta 本身，不包含第三方引擎、游戏或应用的许可。请遵守你所运行软件的最终用户协议。\n\n兼容性会随系统、引擎和目标程序变化。某个 .exe 能否运行，不以本页描述作为保证。",
+        "sheet.privacy.t": "隐私政策",
+        "sheet.privacy.b": "Vesta 客户端在你的 Mac 上本地运行。导入的 .exe、存档、容器和海报不会被上传。\n\n本网站只在你的浏览器里记住语言偏好（localStorage 键名 vesta.lang），不设置追踪账号，也不出售个人信息。\n\n前往 CrossOver、Wine 或 Porting Kit 的官网时，将适用对方各自的隐私政策。",
+        "sheet.community.t": "社区",
+        "sheet.community.b": "Vesta 社区正在组建，公开讨论区即将开放。\n\n在此之前，建议先把兼容环境准备好：需要最稳体验可选 CrossOver，希望免费起步可选 Wine 或 Porting Kit。游戏库、预设和运行状态都留在你自己的 Mac 上。"
+      },
+      en: {
+        "meta.title": "Vesta — Windows games and apps, at home on Mac",
+        "meta.description": "A minimal launcher for Apple Silicon. Run .exe files in one click, tune DXVK and D3DMetal, and mount a local CrossOver or Wine prefix.",
+        "nav.primary": "Primary",
+        "nav.features": "Features",
+        "nav.guide": "Guide",
+        "nav.pricing": "Pricing",
+        "nav.faq": "FAQ",
+        "nav.download": "Download Vesta",
+        "nav.open": "Open menu",
+        "a11y.lang": "Choose language",
+        "a11y.switched": "Language changed to English",
+        "hero.eyebrow": "Built for Apple Silicon",
+        "hero.titleA": "Windows games\nand apps on Mac",
+        "hero.titleB": "at their best",
+        "hero.subtitle": "A minimal launcher designed for Apple Silicon. Run an .exe in one click, with performance presets and a polished library.",
+        "hero.download": "Download free for macOS",
+        "hero.guide": "View the setup guide",
+        "hero.pill1": "Runs locally",
+        "hero.pill2": "No private uploads",
+        "hero.pill3": "M1 through M4",
+        "mock.label": "Preview of the Vesta library, with Black Myth, Steam, and Notepad++",
+        "menu.file": "File",
+        "menu.edit": "Edit",
+        "menu.view": "View",
+        "menu.window": "Window",
+        "menu.help": "Help",
+        "mock.search": "Search games or apps",
+        "mock.library": "Library",
+        "mock.games": "Games",
+        "mock.tools": "Utilities",
+        "mock.hw": "Hardware",
+        "mock.fpsLabel": "FPS",
+        "mock.gpuLabel": "GPU",
+        "mock.game": "Game",
+        "mock.tool": "Utility",
+        "mock.running": "Running",
+        "mock.idle": "Idle",
+        "mock.ready": "Imported",
+        "feat.eyebrow": "Highlights",
+        "feat.title": "A Mac library for the Windows software you already have",
+        "feat.subtitle": "Vesta handles import, presets, artwork, and monitoring. Keep the CrossOver or Wine engine you already trust.",
+        "feat.1.t": "Import with almost no setup",
+        "feat.1.d": "Drop in an .exe. Vesta reads the path, dependencies, and category so you rarely touch the prefix by hand.",
+        "feat.2.t": "Performance, one toggle away",
+        "feat.2.d": "Apply a graphics preset per app and turn on DXVK or D3DMetal translation for steadier results on Apple Silicon.",
+        "feat.3.t": "Bring your own engine (BYOE)",
+        "feat.3.d": "Mount local CrossOver, or free and open Wine / Porting Kit. You choose the engine. Vesta keeps the library.",
+        "feat.4.t": "A library that looks finished",
+        "feat.4.d": "Posters, high-resolution art, and categories are organized for you. Games, tools, and office apps stay in their own groups.",
+        "feat.5.t": "Quiet hardware monitoring",
+        "feat.5.d": "See Apple silicon load and rendered frame rate inside the launcher, then pick a preset without opening another utility.",
+        "feat.6.t": "Private by design",
+        "feat.6.d": "Everything stays on this Mac. Executables, saves, and artwork are never uploaded.",
+        "guide.eyebrow": "Get started",
+        "guide.title": "Three steps from download to play",
+        "guide.subtitle": "Install Vesta, then bind an environment. CrossOver is the steady choice. Wine and Porting Kit are free ways to begin.",
+        "step.1.t": "Download and install Vesta",
+        "step.1.d": "Get the macOS build and move it to Applications. Vesta is a launcher. Setup does not replace system components.",
+        "step.2.t": "Bind a compatibility environment",
+        "step.2.d": "CrossOver is strongly recommended for games and everyday Windows apps. Vesta mounts the engine already installed on your Mac.",
+        "step.2.cta": "Get the CrossOver offer",
+        "step.2.alt": "Wine and Porting Kit are free alternatives. Vesta can detect and launch with them too.",
+        "step.2.wine": "WineHQ",
+        "step.2.porting": "Porting Kit",
+        "step.3.t": "Import an .exe and play",
+        "step.3.d": "Add the executable to your library, choose DXVK or D3DMetal, and launch. Artwork and status stay with the entry.",
+        "compat.eyebrow": "Compatibility",
+        "compat.title": "Ready for the Mac you have now",
+        "compat.subtitle": "The full Apple silicon line, on recent macOS releases. Intel Macs are not supported.",
+        "compat.chip.k": "Chip",
+        "compat.chip.t": "Apple Silicon",
+        "compat.chip.d": "M1, M2, M3, and M4, including Pro, Max, and Ultra. 16 GB of unified memory or more is recommended so macOS and the Windows prefix can share the machine comfortably.",
+        "compat.os.k": "System",
+        "compat.os.t": "macOS Ventura or later",
+        "compat.os.d": "macOS Ventura, Sonoma, Sequoia, and later. Keep macOS current so newer Metal graphics paths stay available.",
+        "compat.h1": "Item",
+        "compat.h2": "Support",
+        "compat.r1.k": "Processor",
+        "compat.r1.v": "Apple Silicon M1 / M2 / M3 / M4, including Pro, Max, and Ultra",
+        "compat.r2.k": "Operating system",
+        "compat.r2.v": "macOS Ventura, Sonoma, Sequoia, and later",
+        "compat.r3.k": "Engine",
+        "compat.r3.v": "CrossOver (recommended), Wine, Porting Kit",
+        "compat.r4.k": "Graphics",
+        "compat.r4.v": "DXVK, D3DMetal, Metal",
+        "price.eyebrow": "Pricing",
+        "price.title": "Try it, then keep it",
+        "price.subtitle": "Fourteen days include the full launcher. Prices cover the Vesta client only, not a CrossOver license.",
+        "price.badge": "Popular",
+        "price.free.name": "Trial",
+        "price.free.price": "Free",
+        "price.free.unit": "14 days, full features",
+        "price.free.1": "Every feature for 14 days",
+        "price.free.2": "Presets, artwork, monitoring, engines",
+        "price.free.3": "Files and saves stay on this Mac",
+        "price.free.cta": "Start the trial",
+        "price.pro.name": "Personal",
+        "price.pro.price": "¥128",
+        "price.pro.unit": "One Mac · one-time",
+        "price.pro.1": "A perpetual license for one Mac",
+        "price.pro.2": "Everything you used in the trial",
+        "price.pro.3": "Library, posters, and presets kept",
+        "price.pro.4": "Compatibility updates",
+        "price.pro.cta": "Get Personal",
+        "price.studio.name": "Pro",
+        "price.studio.price": "¥268",
+        "price.studio.unit": "Two Macs · one-time",
+        "price.studio.1": "Everything in Personal",
+        "price.studio.2": "A second Mac license",
+        "price.studio.3": "Switch between prefixes",
+        "price.studio.4": "Earlier access to new builds",
+        "price.studio.cta": "Get Pro",
+        "price.note": "CrossOver is licensed separately by CodeWeavers and is not included. Wine and Porting Kit are free.",
+        "faq.eyebrow": "FAQ",
+        "faq.title": "Before you start",
+        "faq.subtitle": "Engines, chips, your files, and whether a built-in engine is coming.",
+        "faq.1.q": "Why do I need CrossOver or Wine?",
+        "faq.1.a": "Vesta is a launcher and library. It does not ship a Windows compatibility engine. It mounts CrossOver, or free Wine / Porting Kit, then handles .exe import, DXVK and D3DMetal presets, artwork, and status. CrossOver is the steadier choice for games and office apps. Wine and Porting Kit are there if you want to start at no cost.",
+        "faq.2.q": "Does it support M1, M2, M3, and M4?",
+        "faq.2.a": "Yes. Vesta targets all Apple silicon: M1, M2, M3, and M4, including Pro, Max, and Ultra. macOS Ventura, Sonoma, Sequoia, and later are supported. Intel Macs are not.",
+        "faq.3.q": "Are my .exe files and data safe?",
+        "faq.3.a": "Yes. Vesta runs entirely on your Mac. Executables, saves, prefixes, and artwork stay on the machine. They are not uploaded, and unrelated private files are not read.",
+        "faq.4.q": "Will there be a version with a built-in engine?",
+        "faq.4.a": "An integrated engine is on the roadmap. Until then, bring-your-own-engine lets you keep using CrossOver or open-source Wine. Your library, presets, and artwork remain in place.",
+        "cta.eyebrow": "Start now",
+        "cta.title": "Give your Windows games and apps a home on the Mac",
+        "cta.subtitle": "Download Vesta, mount CrossOver or free Wine, and keep every .exe in one quiet library.",
+        "cta.button": "Download free for macOS",
+        "cta.secondary": "Check compatibility",
+        "cta.note": "Apple Silicon · macOS Ventura or later",
+        "footer.blurb": "A launcher for Windows games and apps on Mac. Local by default. Your engine, your choice.",
+        "footer.product": "Product",
+        "footer.legal": "Legal and community",
+        "footer.terms": "Terms of service",
+        "footer.privacy": "Privacy policy",
+        "footer.community": "Community",
+        "footer.copy": "© 2026 Vesta. All rights reserved.",
+        "sheet.close": "Close",
+        "sheet.guide": "View the setup guide",
+        "sheet.download.t": "Download for macOS",
+        "sheet.download.b": "Vesta runs on Apple silicon Macs with macOS Ventura, Sonoma, Sequoia, or later.\n\nWhen the installer is published, this button starts the download directly. You can prepare CrossOver now, or use free Wine / Porting Kit.",
+        "sheet.terms.t": "Terms of service",
+        "sheet.terms.b": "Vesta is a launcher for macOS. You bring your own Windows programs and a compatibility environment such as CrossOver, Wine, or Porting Kit.\n\nA Vesta license covers the client only. It does not include third-party engines, games, or apps. Follow the license of every program you run.\n\nCompatibility depends on the system, the engine, and the target program. Nothing on this page guarantees that a specific .exe will run.",
+        "sheet.privacy.t": "Privacy policy",
+        "sheet.privacy.b": "The Vesta client runs locally on your Mac. Imported executables, saves, prefixes, and artwork are not uploaded.\n\nThis website stores only your language choice in the browser (localStorage key vesta.lang). It does not create a tracking account or sell personal information.\n\nVisits to the CrossOver, Wine, or Porting Kit sites follow those sites’ own privacy policies.",
+        "sheet.community.t": "Community",
+        "sheet.community.b": "The Vesta community is being assembled, and a public space will open soon.\n\nUntil then, set up a compatibility environment first. Choose CrossOver for the steadiest path, or Wine / Porting Kit if you want to start for free. Your library, presets, and status stay on your Mac."
+      },
+      ja: {
+        "meta.title": "Vesta — Mac で楽しむ Windows ゲームとアプリ",
+        "meta.description": "Apple Silicon 向けのミニマルなランチャー。.exe をワンクリックで起動し、DXVK と D3DMetal を管理。お使いの CrossOver または Wine をマウントできます。",
+        "nav.primary": "ページ内ナビ",
+        "nav.features": "機能",
+        "nav.guide": "使い方",
+        "nav.pricing": "価格とエディション",
+        "nav.faq": "よくある質問",
+        "nav.download": "Vesta をダウンロード",
+        "nav.open": "メニューを開く",
+        "a11y.lang": "言語を選択",
+        "a11y.switched": "言語を日本語に切り替えました",
+        "hero.eyebrow": "Apple Silicon のために",
+        "hero.titleA": "Mac 上の Windows\nゲームとアプリ",
+        "hero.titleB": "極上の体験",
+        "hero.subtitle": "Apple Silicon のために設計されたミニマルなランチャー。.exe をワンクリックで起動し、性能プリセットとライブラリの美化までまとめて管理します。",
+        "hero.download": "macOS 版を無料ダウンロード",
+        "hero.guide": "環境設定ガイドを見る",
+        "hero.pill1": "すべてローカル",
+        "hero.pill2": "個人ファイルは送らない",
+        "hero.pill3": "M1 から M4 まで",
+        "mock.label": "Vesta のライブラリプレビュー。黒神話、Steam、Notepad++ を表示",
+        "menu.file": "ファイル",
+        "menu.edit": "編集",
+        "menu.view": "表示",
+        "menu.window": "ウィンドウ",
+        "menu.help": "ヘルプ",
+        "mock.search": "ゲームやアプリを検索",
+        "mock.library": "ライブラリ",
+        "mock.games": "ゲーム",
+        "mock.tools": "ユーティリティ",
+        "mock.hw": "ハードウェア",
+        "mock.fpsLabel": "フレーム",
+        "mock.gpuLabel": "GPU",
+        "mock.game": "ゲーム",
+        "mock.tool": "ツール",
+        "mock.running": "実行中",
+        "mock.idle": "停止中",
+        "mock.ready": "取り込み済み",
+        "feat.eyebrow": "主な特長",
+        "feat.title": "Windows ソフトを、Mac のライブラリにまとめる",
+        "feat.subtitle": "取り込み、プリセット、美化、モニタは Vesta が担当。互換エンジンは使い慣れた CrossOver か Wine のままです。",
+        "feat.1.t": "設定ほぼ不要の高速取り込み",
+        "feat.1.d": ".exe をドロップするだけ。パス、依存関係、分類を読み取るので、コンテナを手で組む作業はほとんどありません。",
+        "feat.2.t": "ワンクリックの性能調整",
+        "feat.2.d": "アプリごとにグラフィックプリセットを適用し、DXVK または D3DMetal 変換をすぐ有効にできます。",
+        "feat.3.t": "エンジンを自由にマウント (BYOE)",
+        "feat.3.d": "手元の CrossOver、または無料の Wine / Porting Kit をそのまま関連付け。エンジンはあなたが選び、ライブラリは Vesta が整えます。",
+        "feat.4.t": "ライブラリのビジュアル",
+        "feat.4.d": "ポスター、高解像度の壁紙、分類を自動で整理。ゲーム、ツール、オフィスがそれぞれまとまります。",
+        "feat.5.t": "静かなハードウェア監視",
+        "feat.5.d": "M シリーズの使用状況と描画フレームレートをランチャー内で確認。別の監視アプリは要りません。",
+        "feat.6.t": "プライバシーを最初から",
+        "feat.6.d": "処理はこの Mac の中だけ。exe、セーブ、ポスターをアップロードすることはありません。",
+        "guide.eyebrow": "はじめに",
+        "guide.title": "ダウンロードから起動まで 3 ステップ",
+        "guide.subtitle": "Vesta を入れて、互換環境を結びます。いちばん安定するのは CrossOver。Wine と Porting Kit なら無料で始められます。",
+        "step.1.t": "Vesta をダウンロードしてインストール",
+        "step.1.d": "macOS 版を入手し、「アプリケーション」へ入れます。Vesta はランチャーであり、システム部品は置き換えません。",
+        "step.2.t": "互換環境を関連付ける",
+        "step.2.d": "ゲームも日常的な Windows アプリも、CrossOver を強くおすすめします。Vesta は Mac に入っているエンジンをマウントします。",
+        "step.2.cta": "CrossOver の特典を見る",
+        "step.2.alt": "Wine または Porting Kit でも無料で始められます。Vesta から同様に認識して呼び出せます。",
+        "step.2.wine": "Wine 公式サイト",
+        "step.2.porting": "Porting Kit",
+        "step.3.t": ".exe を入れて、すぐ起動",
+        "step.3.d": "実行ファイルをライブラリに置き、DXVK か D3DMetal を選んで起動。ポスターと状態はエントリに残ります。",
+        "compat.eyebrow": "互換性",
+        "compat.title": "いま使っている Mac のために",
+        "compat.subtitle": "Apple Silicon の全シリーズと、最近の macOS。Intel Mac は対象外です。",
+        "compat.chip.k": "チップ",
+        "compat.chip.t": "Apple Silicon",
+        "compat.chip.d": "M1、M2、M3、M4 のすべてに対応し、Pro、Max、Ultra も含みます。システムと Windows コンテナを同時に載せるなら、ユニファイドメモリは 16 GB 以上が目安です。",
+        "compat.os.k": "システム",
+        "compat.os.t": "macOS Ventura 以降",
+        "compat.os.d": "macOS Ventura、Sonoma、Sequoia と、それ以降に対応します。新しい Metal の経路を使うため、システムは最新に保ってください。",
+        "compat.h1": "項目",
+        "compat.h2": "対応範囲",
+        "compat.r1.k": "プロセッサ",
+        "compat.r1.v": "Apple Silicon M1 / M2 / M3 / M4（Pro、Max、Ultra を含む）",
+        "compat.r2.k": "オペレーティングシステム",
+        "compat.r2.v": "macOS Ventura、Sonoma、Sequoia 以降",
+        "compat.r3.k": "互換エンジン",
+        "compat.r3.v": "CrossOver（推奨）、Wine、Porting Kit",
+        "compat.r4.k": "グラフィックス",
+        "compat.r4.v": "DXVK、D3DMetal、Metal",
+        "price.eyebrow": "価格とエディション",
+        "price.title": "試してから、残すかを決める",
+        "price.subtitle": "14 日間はランチャーの全機能を使えます。表示価格は Vesta 本体のライセンスで、CrossOver は含まれません。",
+        "price.badge": "おすすめ",
+        "price.free.name": "体験版",
+        "price.free.price": "無料",
+        "price.free.unit": "14 日間・全機能",
+        "price.free.1": "14 日間は機能制限なし",
+        "price.free.2": "プリセット、美化、監視、エンジン",
+        "price.free.3": "ファイルとセーブはこの Mac だけ",
+        "price.free.cta": "体験を始める",
+        "price.pro.name": "パーソナル",
+        "price.pro.price": "¥128",
+        "price.pro.unit": "Mac 1 台 · 買い切り",
+        "price.pro.1": "Mac 1 台の買い切りライセンス",
+        "price.pro.2": "体験中の機能をそのまま継続",
+        "price.pro.3": "ライブラリ、ポスター、プリセットを保持",
+        "price.pro.4": "互換性のアップデート",
+        "price.pro.cta": "パーソナルを入手",
+        "price.studio.name": "プロ",
+        "price.studio.price": "¥268",
+        "price.studio.unit": "Mac 2 台 · 買い切り",
+        "price.studio.1": "パーソナルの全機能",
+        "price.studio.2": "2 台目の Mac ライセンス",
+        "price.studio.3": "複数コンテナの切り替え",
+        "price.studio.4": "新しいビルドを優先利用",
+        "price.studio.cta": "プロを入手",
+        "price.note": "CrossOver は CodeWeavers が別途許諾するもので、Vesta の価格には含まれません。Wine と Porting Kit は無料です。",
+        "faq.eyebrow": "よくある質問",
+        "faq.title": "始める前に",
+        "faq.subtitle": "エンジン、チップ、データの扱い、そして内蔵エンジンの予定。",
+        "faq.1.q": "なぜ CrossOver / Wine と組み合わせるのですか？",
+        "faq.1.a": "Vesta はランチャー兼ライブラリで、Windows 互換エンジンそのものは含みません。お使いの CrossOver、または無料の Wine / Porting Kit をマウントし、.exe の取り込み、DXVK と D3DMetal、ポスター、実行状態を担います。ゲームや業務アプリを安定させたい場合は CrossOver を。費用をかけずに始めるなら Wine か Porting Kit をそのまま呼び出せます。",
+        "faq.2.q": "M1 / M2 / M3 / M4 に対応していますか？",
+        "faq.2.a": "対応しています。M1、M2、M3、M4 に加え、Pro、Max、Ultra も対象です。macOS は Ventura、Sonoma、Sequoia 以降です。Intel Mac は現在サポートしていません。",
+        "faq.3.q": "取り込んだ .exe やデータは安全ですか？",
+        "faq.3.a": "安全です。Vesta はこの Mac の中だけで動きます。実行ファイル、セーブ、コンテナ、ポスターは端末内に残り、サーバーへ送られません。それらと無関係な個人ファイルを読み取ることもありません。",
+        "faq.4.q": "内蔵エンジンの版は出ますか？",
+        "faq.4.a": "内蔵エンジンはロードマップにあります。用意できるまでは、BYOE で信頼している CrossOver かオープンソースの Wine を使い続けてください。ライブラリ、プリセット、美化設定はそのまま残ります。",
+        "cta.eyebrow": "さあ始めましょう",
+        "cta.title": "Windows のゲームとソフトに、Mac の居場所を",
+        "cta.subtitle": "Vesta を入れて CrossOver か無料の Wine をマウントし、.exe を静かなライブラリにまとめましょう。",
+        "cta.button": "macOS 版を無料ダウンロード",
+        "cta.secondary": "互換性を確認",
+        "cta.note": "Apple Silicon · macOS Ventura 以降",
+        "footer.blurb": "Mac のための Windows ゲーム＆アプリ起動ツール。ローカルで動き、エンジンは自分で選べます。",
+        "footer.product": "製品",
+        "footer.legal": "規約とコミュニティ",
+        "footer.terms": "利用規約",
+        "footer.privacy": "プライバシーポリシー",
+        "footer.community": "コミュニティ",
+        "footer.copy": "© 2026 Vesta. All rights reserved.",
+        "sheet.close": "閉じる",
+        "sheet.guide": "設定ガイドを見る",
+        "sheet.download.t": "macOS 版をダウンロード",
+        "sheet.download.b": "Vesta は Apple Silicon を搭載した Mac 向けです。macOS Ventura、Sonoma、Sequoia 以降が必要です。\n\nインストーラの公開後は、このボタンから直接ダウンロードできます。先に CrossOver を用意するか、無料の Wine / Porting Kit を使ってください。",
+        "sheet.terms.t": "利用規約",
+        "sheet.terms.b": "Vesta は macOS 上のランチャーです。Windows プログラムと、CrossOver、Wine、Porting Kit などの互換環境はご自身で用意します。\n\nVesta のライセンスがカバーするのはクライアントだけです。他社のエンジン、ゲーム、アプリの許諾は含まれません。実行するソフトウェアの使用許諾に従ってください。\n\n互換性はシステム、エンジン、対象プログラムによって変わります。このページの説明は、特定の .exe が動作することを保証しません。",
+        "sheet.privacy.t": "プライバシーポリシー",
+        "sheet.privacy.b": "Vesta クライアントはお使いの Mac 上でローカルに動作します。取り込んだ exe、セーブ、コンテナ、ポスターはアップロードされません。\n\nこのサイトがブラウザに保存するのは言語設定だけです（localStorage のキー vesta.lang）。追跡用アカウントは作らず、個人情報を販売することもありません。\n\nCrossOver、Wine、Porting Kit の公式サイトへ移動した場合は、各サイトのプライバシーポリシーが適用されます。",
+        "sheet.community.t": "コミュニティ",
+        "sheet.community.b": "Vesta のコミュニティは準備中で、公開の場はまもなく開きます。\n\nそれまでは互換環境を先に整えてください。安定を取るなら CrossOver、無料で始めるなら Wine または Porting Kit です。ライブラリ、プリセット、実行状態はご自身の Mac に残ります。"
+      },
+      ko: {
+        "meta.title": "Vesta — Mac에서 만나는 Windows 게임과 앱",
+        "meta.description": "Apple Silicon을 위한 미니멀 런처. .exe를 한 번에 실행하고 DXVK와 D3DMetal을 관리하며, 로컬 CrossOver 또는 Wine을 연결합니다.",
+        "nav.primary": "기본 탐색",
+        "nav.features": "기능",
+        "nav.guide": "사용 가이드",
+        "nav.pricing": "가격과 버전",
+        "nav.faq": "자주 묻는 질문",
+        "nav.download": "Vesta 다운로드",
+        "nav.open": "메뉴 열기",
+        "a11y.lang": "언어 선택",
+        "a11y.switched": "언어가 한국어로 변경되었습니다",
+        "hero.eyebrow": "Apple Silicon을 위해",
+        "hero.titleA": "Mac 위의 Windows\n게임과 앱",
+        "hero.titleB": "가장 좋은 경험",
+        "hero.subtitle": "Apple Silicon을 위해 설계된 미니멀 런처. .exe를 한 번에 실행하고, 성능 프리셋과 라이브러리 꾸미기까지 관리합니다.",
+        "hero.download": "macOS 버전 무료 다운로드",
+        "hero.guide": "환경 설정 가이드 보기",
+        "hero.pill1": "완전히 로컬에서 실행",
+        "hero.pill2": "개인 파일을 올리지 않음",
+        "hero.pill3": "M1부터 M4까지",
+        "mock.label": "Vesta 라이브러리 미리보기. 검은 신화, Steam, Notepad++",
+        "menu.file": "파일",
+        "menu.edit": "편집",
+        "menu.view": "보기",
+        "menu.window": "윈도우",
+        "menu.help": "도움말",
+        "mock.search": "게임 또는 앱 검색",
+        "mock.library": "라이브러리",
+        "mock.games": "게임",
+        "mock.tools": "유틸리티",
+        "mock.hw": "하드웨어",
+        "mock.fpsLabel": "프레임",
+        "mock.gpuLabel": "GPU",
+        "mock.game": "게임",
+        "mock.tool": "도구",
+        "mock.running": "실행 중",
+        "mock.idle": "중지됨",
+        "mock.ready": "가져옴",
+        "feat.eyebrow": "핵심 기능",
+        "feat.title": "Windows 소프트웨어를 Mac의 라이브러리로",
+        "feat.subtitle": "가져오기, 프리셋, 꾸미기, 모니터링은 Vesta가 맡습니다. 호환 엔진은 이미 믿고 쓰는 CrossOver 또는 Wine을 그대로 씁니다.",
+        "feat.1.t": "설정 거의 없이 빠르게 가져오기",
+        "feat.1.d": ".exe를 끌어다 놓으세요. 경로, 의존성, 분류를 읽으므로 컨테이너를 손으로 맞출 일이 거의 없습니다.",
+        "feat.2.t": "한 번의 성능 조정",
+        "feat.2.d": "앱마다 그래픽 프리셋을 적용하고 DXVK 또는 D3DMetal 변환을 바로 켭니다. Apple Silicon에서 더 안정적으로 실행됩니다.",
+        "feat.3.t": "엔진 자유 마운트 (BYOE)",
+        "feat.3.d": "로컬 CrossOver 또는 무료 오픈 소스 Wine / Porting Kit을 그대로 연결합니다. 엔진은 사용자가, 라이브러리는 Vesta가 관리합니다.",
+        "feat.4.t": "라이브러리 비주얼",
+        "feat.4.d": "포스터, 고해상도 배경, 분류를 자동으로 정리합니다. 게임, 도구, 오피스 앱이 각자 모입니다.",
+        "feat.5.t": "간결한 하드웨어 모니터링",
+        "feat.5.d": "M 시리즈 점유율과 렌더링 프레임을 런처 안에서 확인합니다. 별도의 모니터링 앱이 필요 없습니다.",
+        "feat.6.t": "개인정보 보호",
+        "feat.6.d": "이 Mac 안에서만 동작합니다. exe, 세이브, 포스터는 업로드되지 않습니다.",
+        "guide.eyebrow": "시작하기",
+        "guide.title": "다운로드부터 실행까지 세 단계",
+        "guide.subtitle": "Vesta를 설치한 뒤 호환 환경을 연결하세요. 가장 안정적인 선택은 CrossOver이고, Wine과 Porting Kit으로 무료로 시작할 수 있습니다.",
+        "step.1.t": "Vesta 클라이언트를 설치",
+        "step.1.d": "macOS 버전을 받아 응용 프로그램 폴더에 넣습니다. Vesta는 런처이며, 설치가 시스템 구성 요소를 바꾸지 않습니다.",
+        "step.2.t": "호환 환경 연결",
+        "step.2.d": "게임과 일상적인 Windows 앱에는 CrossOver를 강력히 권합니다. Vesta는 Mac에 이미 설치된 엔진을 마운트합니다.",
+        "step.2.cta": "CrossOver 혜택 받기",
+        "step.2.alt": "Wine 또는 Porting Kit으로도 무료로 시작할 수 있으며, Vesta가 동일하게 인식해 실행합니다.",
+        "step.2.wine": "Wine 공식 사이트",
+        "step.2.porting": "Porting Kit",
+        "step.3.t": ".exe를 넣고 바로 실행",
+        "step.3.d": "실행 파일을 라이브러리에 넣고 DXVK 또는 D3DMetal을 고른 다음 실행하세요. 포스터와 상태는 항목에 남습니다.",
+        "compat.eyebrow": "호환성",
+        "compat.title": "지금 쓰는 Mac을 위해",
+        "compat.subtitle": "Apple Silicon 전 라인과 최근 macOS. Intel Mac은 지원하지 않습니다.",
+        "compat.chip.k": "칩",
+        "compat.chip.t": "Apple Silicon",
+        "compat.chip.d": "M1, M2, M3, M4 전체와 Pro, Max, Ultra를 지원합니다. 시스템과 Windows 컨테이너를 함께 두려면 통합 메모리 16 GB 이상을 권합니다.",
+        "compat.os.k": "시스템",
+        "compat.os.t": "macOS Ventura 이상",
+        "compat.os.d": "macOS Ventura, Sonoma, Sequoia 및 이후 버전을 지원합니다. 최신 Metal 경로를 쓰려면 시스템을 최신으로 유지하세요.",
+        "compat.h1": "항목",
+        "compat.h2": "지원 범위",
+        "compat.r1.k": "프로세서",
+        "compat.r1.v": "Apple Silicon M1 / M2 / M3 / M4, Pro · Max · Ultra 포함",
+        "compat.r2.k": "운영 체제",
+        "compat.r2.v": "macOS Ventura, Sonoma, Sequoia 및 이후 버전",
+        "compat.r3.k": "호환 엔진",
+        "compat.r3.v": "CrossOver(권장), Wine, Porting Kit",
+        "compat.r4.k": "그래픽",
+        "compat.r4.v": "DXVK, D3DMetal, Metal",
+        "price.eyebrow": "가격과 버전",
+        "price.title": "먼저 써 보고, 남길지 정하세요",
+        "price.subtitle": "14일 동안 런처 전체를 사용할 수 있습니다. 가격은 Vesta 클라이언트 라이선스이며 CrossOver는 포함되지 않습니다.",
+        "price.badge": "추천",
+        "price.free.name": "체험판",
+        "price.free.price": "무료",
+        "price.free.unit": "14일 · 전체 기능",
+        "price.free.1": "14일 동안 기능 제한 없음",
+        "price.free.2": "프리셋, 꾸미기, 모니터링, 엔진",
+        "price.free.3": "파일과 세이브는 이 Mac에만",
+        "price.free.cta": "체험 시작",
+        "price.pro.name": "개인용",
+        "price.pro.price": "¥128",
+        "price.pro.unit": "Mac 1대 · 일시불",
+        "price.pro.1": "Mac 1대 영구 라이선스",
+        "price.pro.2": "체험 중 쓰던 기능 그대로",
+        "price.pro.3": "라이브러리, 포스터, 프리셋 유지",
+        "price.pro.4": "호환성 업데이트",
+        "price.pro.cta": "개인용 받기",
+        "price.studio.name": "프로",
+        "price.studio.price": "¥268",
+        "price.studio.unit": "Mac 2대 · 일시불",
+        "price.studio.1": "개인용의 모든 기능",
+        "price.studio.2": "두 번째 Mac 라이선스",
+        "price.studio.3": "여러 컨테이너 전환",
+        "price.studio.4": "새 버전 우선 사용",
+        "price.studio.cta": "프로 받기",
+        "price.note": "CrossOver는 CodeWeavers가 별도로 라이선스하며 Vesta 가격에 포함되지 않습니다. Wine과 Porting Kit은 무료입니다.",
+        "faq.eyebrow": "자주 묻는 질문",
+        "faq.title": "시작하기 전에",
+        "faq.subtitle": "엔진, 칩, 데이터, 그리고 내장 엔진의 계획.",
+        "faq.1.q": "왜 CrossOver / Wine과 함께 써야 하나요?",
+        "faq.1.a": "Vesta는 런처이자 라이브러리이며, Windows 호환 엔진을 내장하지 않습니다. 로컬 CrossOver 또는 무료 Wine / Porting Kit을 마운트한 뒤 .exe 가져오기, DXVK와 D3DMetal 프리셋, 포스터, 실행 상태를 맡습니다. 게임과 오피스 앱을 더 안정적으로 쓰려면 CrossOver를 권합니다. 비용 없이 시작하려면 Wine 또는 Porting Kit을 그대로 호출할 수 있습니다.",
+        "faq.2.q": "M1 / M2 / M3 / M4를 지원하나요?",
+        "faq.2.a": "지원합니다. M1, M2, M3, M4와 Pro, Max, Ultra가 모두 대상입니다. macOS Ventura, Sonoma, Sequoia 및 이후 버전을 지원합니다. Intel Mac은 현재 지원하지 않습니다.",
+        "faq.3.q": "가져온 .exe와 데이터는 안전한가요?",
+        "faq.3.a": "안전합니다. Vesta는 이 Mac에서만 로컬로 실행됩니다. 실행 파일, 세이브, 컨테이너, 포스터 캐시는 기기에 남으며 서버로 올라가지 않습니다. 이 소프트웨어와 무관한 개인 파일도 읽지 않습니다.",
+        "faq.4.q": "내장 엔진 버전이 나오나요?",
+        "faq.4.a": "내장 엔진은 로드맵에 있습니다. 준비되기 전까지는 BYOE로 이미 신뢰하는 CrossOver 또는 오픈 소스 Wine을 계속 쓰면 됩니다. 라이브러리, 프리셋, 꾸미기 설정은 그대로 남습니다.",
+        "cta.eyebrow": "지금 시작",
+        "cta.title": "Windows 게임과 앱을 Mac에 들이세요",
+        "cta.subtitle": "Vesta를 받고 CrossOver 또는 무료 Wine을 연결한 뒤, .exe를 조용한 라이브러리로 모으세요.",
+        "cta.button": "macOS 버전 무료 다운로드",
+        "cta.secondary": "호환성 확인",
+        "cta.note": "Apple Silicon · macOS Ventura 이상",
+        "footer.blurb": "Mac을 위한 Windows 게임·앱 런처. 로컬에서 동작하고, 엔진은 직접 고릅니다.",
+        "footer.product": "제품",
+        "footer.legal": "약관과 커뮤니티",
+        "footer.terms": "서비스 약관",
+        "footer.privacy": "개인정보 처리방침",
+        "footer.community": "커뮤니티",
+        "footer.copy": "© 2026 Vesta. All rights reserved.",
+        "sheet.close": "닫기",
+        "sheet.guide": "설정 가이드 보기",
+        "sheet.download.t": "macOS 버전 다운로드",
+        "sheet.download.b": "Vesta는 Apple Silicon Mac용입니다. macOS Ventura, Sonoma, Sequoia 이상이 필요합니다.\n\n설치 파일이 공개되면 이 버튼으로 바로 다운로드합니다. 그 전에 CrossOver를 준비하거나 무료 Wine / Porting Kit을 사용하세요.",
+        "sheet.terms.t": "서비스 약관",
+        "sheet.terms.b": "Vesta는 macOS에서 동작하는 런처입니다. Windows 프로그램과 CrossOver, Wine, Porting Kit 같은 호환 환경은 사용자가 준비합니다.\n\nVesta 라이선스는 클라이언트만 포함합니다. 타사 엔진, 게임, 앱의 사용권은 포함되지 않습니다. 실행하는 소프트웨어의 사용권 계약을 따르세요.\n\n호환성은 시스템, 엔진, 대상 프로그램에 따라 달라집니다. 이 페이지의 설명은 특정 .exe의 실행을 보장하지 않습니다.",
+        "sheet.privacy.t": "개인정보 처리방침",
+        "sheet.privacy.b": "Vesta 클라이언트는 사용자의 Mac에서 로컬로 실행됩니다. 가져온 exe, 세이브, 컨테이너, 포스터는 업로드되지 않습니다.\n\n이 웹사이트는 브라우저에 언어 설정만 저장합니다(localStorage 키 vesta.lang). 추적 계정을 만들지 않으며 개인정보를 판매하지 않습니다.\n\nCrossOver, Wine, Porting Kit 공식 사이트로 이동하면 해당 사이트의 개인정보 처리방침이 적용됩니다.",
+        "sheet.community.t": "커뮤니티",
+        "sheet.community.b": "Vesta 커뮤니티를 준비하고 있으며, 공개 공간은 곧 열립니다.\n\n그 전까지는 호환 환경을 먼저 맞추세요. 가장 안정적인 길은 CrossOver이고, 무료로 시작하려면 Wine 또는 Porting Kit을 쓰면 됩니다. 라이브러리, 프리셋, 실행 상태는 사용자의 Mac에 남습니다."
+      },
+      fr: {
+        "meta.title": "Vesta — Jeux et applications Windows sur Mac",
+        "meta.description": "Un lanceur minimal pour Apple Silicon. Ouvrez un .exe en un clic, réglez DXVK et D3DMetal, et montez CrossOver ou Wine en local.",
+        "nav.primary": "Navigation",
+        "nav.features": "Fonctionnalités",
+        "nav.guide": "Guide",
+        "nav.pricing": "Tarifs",
+        "nav.faq": "FAQ",
+        "nav.download": "Télécharger Vesta",
+        "nav.open": "Ouvrir le menu",
+        "a11y.lang": "Choisir la langue",
+        "a11y.switched": "Langue changée en français",
+        "hero.eyebrow": "Conçu pour Apple Silicon",
+        "hero.titleA": "Jeux et applications\nWindows sur Mac",
+        "hero.titleB": "une expérience aboutie",
+        "hero.subtitle": "Un lanceur minimal conçu pour Apple Silicon. Ouvrez un .exe en un clic, avec des préréglages de performances et une bibliothèque soignée.",
+        "hero.download": "Télécharger gratuitement pour macOS",
+        "hero.guide": "Voir le guide de configuration",
+        "hero.pill1": "Exécution locale",
+        "hero.pill2": "Aucun fichier privé envoyé",
+        "hero.pill3": "De M1 à M4",
+        "mock.label": "Aperçu de la bibliothèque Vesta avec Black Myth, Steam et Notepad++",
+        "menu.file": "Fichier",
+        "menu.edit": "Édition",
+        "menu.view": "Présentation",
+        "menu.window": "Fenêtre",
+        "menu.help": "Aide",
+        "mock.search": "Rechercher un jeu ou une app",
+        "mock.library": "Bibliothèque",
+        "mock.games": "Jeux",
+        "mock.tools": "Utilitaires",
+        "mock.hw": "Matériel",
+        "mock.fpsLabel": "Images/s",
+        "mock.gpuLabel": "GPU",
+        "mock.game": "Jeu",
+        "mock.tool": "Outil",
+        "mock.running": "En cours",
+        "mock.idle": "Arrêté",
+        "mock.ready": "Importé",
+        "feat.eyebrow": "Points forts",
+        "feat.title": "Vos logiciels Windows, dans une bibliothèque sur Mac",
+        "feat.subtitle": "Vesta gère l’import, les préréglages, l’habillage et le suivi. Gardez le moteur CrossOver ou Wine auquel vous faites déjà confiance.",
+        "feat.1.t": "Import presque sans réglage",
+        "feat.1.d": "Déposez un .exe. Vesta lit le chemin, les dépendances et la catégorie. Vous touchez rarement au préfixe à la main.",
+        "feat.2.t": "Les performances en un geste",
+        "feat.2.d": "Appliquez un préréglage graphique par application et activez la traduction DXVK ou D3DMetal sur Apple Silicon.",
+        "feat.3.t": "Montez votre propre moteur (BYOE)",
+        "feat.3.d": "Associez CrossOver en local, ou Wine / Porting Kit, gratuits et ouverts. Vous choisissez le moteur. Vesta tient la bibliothèque.",
+        "feat.4.t": "Une bibliothèque qui a de l’allure",
+        "feat.4.d": "Affiches, fonds haute définition et catégories s’organisent tout seuls. Jeux, outils et bureautique restent chacun de leur côté.",
+        "feat.5.t": "Un suivi matériel discret",
+        "feat.5.d": "Consultez la charge des puces M et le taux d’images dans le lanceur, puis choisissez un préréglage sans autre utilitaire.",
+        "feat.6.t": "Privé par construction",
+        "feat.6.d": "Tout reste sur ce Mac. Exécutables, sauvegardes et visuels ne sont jamais envoyés.",
+        "guide.eyebrow": "Démarrage",
+        "guide.title": "Trois étapes, du téléchargement au jeu",
+        "guide.subtitle": "Installez Vesta, puis reliez un environnement. CrossOver est le plus stable. Wine et Porting Kit permettent de commencer gratuitement.",
+        "step.1.t": "Téléchargez et installez Vesta",
+        "step.1.d": "Récupérez la version macOS et placez-la dans Applications. Vesta est un lanceur. L’installation ne remplace aucun composant système.",
+        "step.2.t": "Reliez un environnement compatible",
+        "step.2.d": "CrossOver est vivement recommandé pour les jeux et les applications Windows courantes. Vesta monte le moteur déjà installé sur votre Mac.",
+        "step.2.cta": "Voir l’offre CrossOver",
+        "step.2.alt": "Wine et Porting Kit sont des alternatives gratuites. Vesta peut aussi les détecter et les utiliser.",
+        "step.2.wine": "Site de Wine",
+        "step.2.porting": "Porting Kit",
+        "step.3.t": "Importez un .exe et lancez",
+        "step.3.d": "Ajoutez l’exécutable à la bibliothèque, choisissez DXVK ou D3DMetal, puis lancez. L’affiche et l’état restent avec la fiche.",
+        "compat.eyebrow": "Compatibilité",
+        "compat.title": "Prêt pour le Mac que vous avez",
+        "compat.subtitle": "Toute la gamme Apple Silicon, sur les versions récentes de macOS. Les Mac Intel ne sont pas pris en charge.",
+        "compat.chip.k": "Puce",
+        "compat.chip.t": "Apple Silicon",
+        "compat.chip.d": "M1, M2, M3 et M4, y compris Pro, Max et Ultra. 16 Go de mémoire unifiée ou plus sont conseillés pour laisser de la place à macOS et au préfixe Windows.",
+        "compat.os.k": "Système",
+        "compat.os.t": "macOS Ventura ou ultérieur",
+        "compat.os.d": "macOS Ventura, Sonoma, Sequoia et les versions suivantes. Gardez macOS à jour pour bénéficier des chemins graphiques Metal les plus récents.",
+        "compat.h1": "Élément",
+        "compat.h2": "Prise en charge",
+        "compat.r1.k": "Processeur",
+        "compat.r1.v": "Apple Silicon M1 / M2 / M3 / M4, y compris Pro, Max et Ultra",
+        "compat.r2.k": "Système",
+        "compat.r2.v": "macOS Ventura, Sonoma, Sequoia et versions ultérieures",
+        "compat.r3.k": "Moteur",
+        "compat.r3.v": "CrossOver (recommandé), Wine, Porting Kit",
+        "compat.r4.k": "Graphismes",
+        "compat.r4.v": "DXVK, D3DMetal, Metal",
+        "price.eyebrow": "Tarifs et éditions",
+        "price.title": "Essayez, puis gardez-le",
+        "price.subtitle": "Quatorze jours donnent accès à tout le lanceur. Les prix concernent le client Vesta, pas une licence CrossOver.",
+        "price.badge": "Conseillé",
+        "price.free.name": "Essai",
+        "price.free.price": "Gratuit",
+        "price.free.unit": "14 jours, toutes les fonctions",
+        "price.free.1": "Toutes les fonctions pendant 14 jours",
+        "price.free.2": "Préréglages, visuels, suivi, moteurs",
+        "price.free.3": "Fichiers et sauvegardes sur ce Mac",
+        "price.free.cta": "Commencer l’essai",
+        "price.pro.name": "Personnel",
+        "price.pro.price": "¥128",
+        "price.pro.unit": "Un Mac · achat unique",
+        "price.pro.1": "Licence perpétuelle pour un Mac",
+        "price.pro.2": "Tout ce que couvrait l’essai",
+        "price.pro.3": "Bibliothèque, affiches et préréglages conservés",
+        "price.pro.4": "Mises à jour de compatibilité",
+        "price.pro.cta": "Obtenir Personnel",
+        "price.studio.name": "Pro",
+        "price.studio.price": "¥268",
+        "price.studio.unit": "Deux Mac · achat unique",
+        "price.studio.1": "Tout ce qui est dans Personnel",
+        "price.studio.2": "Licence pour un second Mac",
+        "price.studio.3": "Basculer entre plusieurs préfixes",
+        "price.studio.4": "Accès anticipé aux nouvelles versions",
+        "price.studio.cta": "Obtenir Pro",
+        "price.note": "CrossOver est concédé séparément par CodeWeavers et n’est pas inclus. Wine et Porting Kit sont gratuits.",
+        "faq.eyebrow": "Questions fréquentes",
+        "faq.title": "Avant de commencer",
+        "faq.subtitle": "Le moteur, les puces, vos fichiers, et un futur moteur intégré.",
+        "faq.1.q": "Pourquoi faut-il CrossOver ou Wine ?",
+        "faq.1.a": "Vesta est un lanceur et une bibliothèque. Il n’embarque pas de moteur de compatibilité Windows. Il monte CrossOver, ou Wine / Porting Kit gratuits, puis s’occupe de l’import des .exe, des préréglages DXVK et D3DMetal, des visuels et de l’état. CrossOver est le choix le plus stable pour les jeux et la bureautique. Wine et Porting Kit conviennent si vous voulez commencer sans frais.",
+        "faq.2.q": "Les puces M1, M2, M3 et M4 sont-elles prises en charge ?",
+        "faq.2.a": "Oui. Vesta vise toute la gamme Apple Silicon : M1, M2, M3 et M4, y compris Pro, Max et Ultra. macOS Ventura, Sonoma, Sequoia et les versions suivantes sont pris en charge. Les Mac Intel ne le sont pas.",
+        "faq.3.q": "Mes fichiers .exe et mes données sont-ils en sécurité ?",
+        "faq.3.a": "Oui. Vesta s’exécute entièrement sur votre Mac. Exécutables, sauvegardes, préfixes et visuels restent sur la machine. Ils ne sont pas envoyés, et les fichiers privés sans rapport ne sont pas lus.",
+        "faq.4.q": "Une version avec moteur intégré est-elle prévue ?",
+        "faq.4.a": "Un moteur intégré est sur la feuille de route. En attendant, apportez le vôtre : CrossOver ou Wine open source. Bibliothèque, préréglages et habillage restent en place.",
+        "cta.eyebrow": "Commencer",
+        "cta.title": "Offrez à vos jeux et apps Windows une place sur le Mac",
+        "cta.subtitle": "Téléchargez Vesta, montez CrossOver ou Wine gratuit, et rangez chaque .exe dans une bibliothèque calme.",
+        "cta.button": "Télécharger gratuitement pour macOS",
+        "cta.secondary": "Vérifier la compatibilité",
+        "cta.note": "Apple Silicon · macOS Ventura ou ultérieur",
+        "footer.blurb": "Le lanceur des jeux et applications Windows sur Mac. Local par défaut. Le moteur, c’est vous qui le choisissez.",
+        "footer.product": "Produit",
+        "footer.legal": "Mentions et communauté",
+        "footer.terms": "Conditions d’utilisation",
+        "footer.privacy": "Politique de confidentialité",
+        "footer.community": "Communauté",
+        "footer.copy": "© 2026 Vesta. Tous droits réservés.",
+        "sheet.close": "Fermer",
+        "sheet.guide": "Voir le guide",
+        "sheet.download.t": "Télécharger pour macOS",
+        "sheet.download.b": "Vesta fonctionne sur les Mac Apple Silicon avec macOS Ventura, Sonoma, Sequoia ou une version ultérieure.\n\nLorsque l’installateur sera publié, ce bouton lancera le téléchargement. Vous pouvez préparer CrossOver, ou utiliser Wine / Porting Kit gratuitement.",
+        "sheet.terms.t": "Conditions d’utilisation",
+        "sheet.terms.b": "Vesta est un lanceur pour macOS. Vous fournissez vos programmes Windows et un environnement compatible tel que CrossOver, Wine ou Porting Kit.\n\nUne licence Vesta ne couvre que le client. Elle n’inclut pas les moteurs, jeux ou applications de tiers. Respectez la licence de chaque programme lancé.\n\nLa compatibilité dépend du système, du moteur et du programme visé. Rien sur cette page ne garantit qu’un .exe précis fonctionnera.",
+        "sheet.privacy.t": "Politique de confidentialité",
+        "sheet.privacy.b": "Le client Vesta s’exécute localement sur votre Mac. Les exécutables importés, sauvegardes, préfixes et visuels ne sont pas envoyés.\n\nCe site ne mémorise dans le navigateur que le choix de langue (clé localStorage vesta.lang). Il ne crée pas de compte de suivi et ne vend pas d’informations personnelles.\n\nLes visites vers les sites de CrossOver, Wine ou Porting Kit relèvent de leurs propres politiques.",
+        "sheet.community.t": "Communauté",
+        "sheet.community.b": "La communauté Vesta se prépare. Un espace public ouvrira bientôt.\n\nD’ici là, préparez d’abord un environnement compatible. CrossOver pour le chemin le plus stable, Wine ou Porting Kit pour commencer gratuitement. Bibliothèque, préréglages et état restent sur votre Mac."
+      },
+      es: {
+        "meta.title": "Vesta — Juegos y apps de Windows en el Mac",
+        "meta.description": "Un lanzador minimalista para Apple Silicon. Ejecuta un .exe con un clic, ajusta DXVK y D3DMetal, y monta CrossOver o Wine en local.",
+        "nav.primary": "Navegación",
+        "nav.features": "Funciones",
+        "nav.guide": "Guía",
+        "nav.pricing": "Precios",
+        "nav.faq": "Preguntas",
+        "nav.download": "Descargar Vesta",
+        "nav.open": "Abrir menú",
+        "a11y.lang": "Elegir idioma",
+        "a11y.switched": "Idioma cambiado a español",
+        "hero.eyebrow": "Hecho para Apple Silicon",
+        "hero.titleA": "Juegos y apps de Windows\nen el Mac",
+        "hero.titleB": "una experiencia impecable",
+        "hero.subtitle": "Un lanzador minimalista diseñado para Apple Silicon. Ejecuta un .exe con un clic, con ajustes de rendimiento y una biblioteca cuidada.",
+        "hero.download": "Descargar gratis para macOS",
+        "hero.guide": "Ver la guía de configuración",
+        "hero.pill1": "Se ejecuta en local",
+        "hero.pill2": "No sube archivos privados",
+        "hero.pill3": "De M1 a M4",
+        "mock.label": "Vista previa de la biblioteca de Vesta con Black Myth, Steam y Notepad++",
+        "menu.file": "Archivo",
+        "menu.edit": "Edición",
+        "menu.view": "Visualización",
+        "menu.window": "Ventana",
+        "menu.help": "Ayuda",
+        "mock.search": "Buscar juegos o apps",
+        "mock.library": "Biblioteca",
+        "mock.games": "Juegos",
+        "mock.tools": "Utilidades",
+        "mock.hw": "Hardware",
+        "mock.fpsLabel": "FPS",
+        "mock.gpuLabel": "GPU",
+        "mock.game": "Juego",
+        "mock.tool": "Utilidad",
+        "mock.running": "En ejecución",
+        "mock.idle": "Detenido",
+        "mock.ready": "Importado",
+        "feat.eyebrow": "Puntos clave",
+        "feat.title": "El software de Windows, en una biblioteca del Mac",
+        "feat.subtitle": "Vesta se ocupa de importar, los ajustes, el aspecto y la monitorización. El motor sigue siendo el CrossOver o Wine en el que ya confías.",
+        "feat.1.t": "Importación casi sin configurar",
+        "feat.1.d": "Suelta un .exe. Vesta lee la ruta, las dependencias y la categoría, así que casi no tendrás que preparar el contenedor a mano.",
+        "feat.2.t": "Rendimiento en un toque",
+        "feat.2.d": "Aplica un ajuste gráfico por aplicación y activa la traducción DXVK o D3DMetal para ir más estable en Apple Silicon.",
+        "feat.3.t": "Monta tu propio motor (BYOE)",
+        "feat.3.d": "Enlaza CrossOver local, o Wine / Porting Kit, gratis y de código abierto. Tú eliges el motor. Vesta ordena la biblioteca.",
+        "feat.4.t": "Una biblioteca con buena presencia",
+        "feat.4.d": "Pósters, fondos en alta definición y categorías se organizan solos. Juegos, herramientas y oficina quedan cada uno en su grupo.",
+        "feat.5.t": "Monitorización discreta",
+        "feat.5.d": "Mira la carga de los chips M y los fotogramas dentro del lanzador, y elige un ajuste sin abrir otra utilidad.",
+        "feat.6.t": "Privado desde el diseño",
+        "feat.6.d": "Todo ocurre en este Mac. Los ejecutables, las partidas y los pósters no se suben.",
+        "guide.eyebrow": "Primeros pasos",
+        "guide.title": "Tres pasos, de la descarga a jugar",
+        "guide.subtitle": "Instala Vesta y vincula un entorno. CrossOver es la opción más estable. Wine y Porting Kit permiten empezar gratis.",
+        "step.1.t": "Descarga e instala Vesta",
+        "step.1.d": "Consigue la versión para macOS y muévela a Aplicaciones. Vesta es un lanzador. La instalación no sustituye componentes del sistema.",
+        "step.2.t": "Vincula un entorno compatible",
+        "step.2.d": "CrossOver es la recomendación clara para juegos y apps de Windows de uso diario. Vesta monta el motor que ya tengas en el Mac.",
+        "step.2.cta": "Ver la oferta de CrossOver",
+        "step.2.alt": "Wine y Porting Kit son alternativas gratuitas. Vesta también puede detectarlos y usarlos.",
+        "step.2.wine": "Sitio de Wine",
+        "step.2.porting": "Porting Kit",
+        "step.3.t": "Importa un .exe y juega",
+        "step.3.d": "Añade el ejecutable a la biblioteca, elige DXVK o D3DMetal y ábrelo. El póster y el estado se quedan en la ficha.",
+        "compat.eyebrow": "Compatibilidad",
+        "compat.title": "Listo para el Mac que tienes",
+        "compat.subtitle": "Toda la gama Apple Silicon y las versiones recientes de macOS. Los Mac con Intel no están soportados.",
+        "compat.chip.k": "Chip",
+        "compat.chip.t": "Apple Silicon",
+        "compat.chip.d": "M1, M2, M3 y M4, incluidos Pro, Max y Ultra. Se recomiendan 16 GB o más de memoria unificada para que macOS y el contenedor de Windows convivan con holgura.",
+        "compat.os.k": "Sistema",
+        "compat.os.t": "macOS Ventura o posterior",
+        "compat.os.d": "macOS Ventura, Sonoma, Sequoia y versiones posteriores. Mantén el sistema al día para usar las rutas gráficas de Metal más recientes.",
+        "compat.h1": "Elemento",
+        "compat.h2": "Compatibilidad",
+        "compat.r1.k": "Procesador",
+        "compat.r1.v": "Apple Silicon M1 / M2 / M3 / M4, incluidos Pro, Max y Ultra",
+        "compat.r2.k": "Sistema operativo",
+        "compat.r2.v": "macOS Ventura, Sonoma, Sequoia y posteriores",
+        "compat.r3.k": "Motor",
+        "compat.r3.v": "CrossOver (recomendado), Wine, Porting Kit",
+        "compat.r4.k": "Gráficos",
+        "compat.r4.v": "DXVK, D3DMetal, Metal",
+        "price.eyebrow": "Precios y ediciones",
+        "price.title": "Pruébalo y luego decide",
+        "price.subtitle": "Catorce días incluyen el lanzador completo. Los precios cubren solo el cliente de Vesta, no una licencia de CrossOver.",
+        "price.badge": "Recomendado",
+        "price.free.name": "Prueba",
+        "price.free.price": "Gratis",
+        "price.free.unit": "14 días, todas las funciones",
+        "price.free.1": "Todas las funciones durante 14 días",
+        "price.free.2": "Ajustes, aspecto, monitor y motores",
+        "price.free.3": "Archivos y partidas solo en este Mac",
+        "price.free.cta": "Empezar la prueba",
+        "price.pro.name": "Personal",
+        "price.pro.price": "¥128",
+        "price.pro.unit": "Un Mac · pago único",
+        "price.pro.1": "Licencia perpetua para un Mac",
+        "price.pro.2": "Todo lo que cubría la prueba",
+        "price.pro.3": "Biblioteca, pósters y ajustes conservados",
+        "price.pro.4": "Actualizaciones de compatibilidad",
+        "price.pro.cta": "Obtener Personal",
+        "price.studio.name": "Pro",
+        "price.studio.price": "¥268",
+        "price.studio.unit": "Dos Mac · pago único",
+        "price.studio.1": "Todo lo de Personal",
+        "price.studio.2": "Licencia para un segundo Mac",
+        "price.studio.3": "Cambiar entre contenedores",
+        "price.studio.4": "Acceso anticipado a versiones nuevas",
+        "price.studio.cta": "Obtener Pro",
+        "price.note": "CrossOver tiene una licencia aparte de CodeWeavers y no está incluido. Wine y Porting Kit son gratuitos.",
+        "faq.eyebrow": "Preguntas frecuentes",
+        "faq.title": "Antes de empezar",
+        "faq.subtitle": "El motor, los chips, tus archivos y si llegará un motor integrado.",
+        "faq.1.q": "¿Por qué hace falta CrossOver o Wine?",
+        "faq.1.a": "Vesta es un lanzador y una biblioteca. No incluye un motor de compatibilidad con Windows. Monta CrossOver, o Wine / Porting Kit gratuitos, y se encarga de importar el .exe, de los ajustes DXVK y D3DMetal, de los pósters y del estado. CrossOver es la opción más estable para juegos y oficina. Wine y Porting Kit sirven si quieres empezar sin coste.",
+        "faq.2.q": "¿Admite chips M1, M2, M3 y M4?",
+        "faq.2.a": "Sí. Vesta está pensado para todo Apple Silicon: M1, M2, M3 y M4, incluidos Pro, Max y Ultra. Admite macOS Ventura, Sonoma, Sequoia y versiones posteriores. Los Mac con Intel no están soportados.",
+        "faq.3.q": "¿Están seguros mis archivos .exe y mis datos?",
+        "faq.3.a": "Sí. Vesta se ejecuta por completo en tu Mac. Ejecutables, partidas, contenedores y pósters permanecen en el equipo. No se suben, y no se leen archivos privados que no tengan relación.",
+        "faq.4.q": "¿Habrá una versión con motor integrado?",
+        "faq.4.a": "Un motor integrado está en la hoja de ruta. Mientras llega, puedes seguir con CrossOver o con Wine de código abierto. La biblioteca, los ajustes y el aspecto se conservan.",
+        "cta.eyebrow": "Empieza ahora",
+        "cta.title": "Dale a tus juegos y apps de Windows un sitio en el Mac",
+        "cta.subtitle": "Descarga Vesta, monta CrossOver o Wine gratis y reúne cada .exe en una biblioteca tranquila.",
+        "cta.button": "Descargar gratis para macOS",
+        "cta.secondary": "Revisar compatibilidad",
+        "cta.note": "Apple Silicon · macOS Ventura o posterior",
+        "footer.blurb": "El lanzador de juegos y apps de Windows en el Mac. En local. El motor lo eliges tú.",
+        "footer.product": "Producto",
+        "footer.legal": "Avisos y comunidad",
+        "footer.terms": "Términos del servicio",
+        "footer.privacy": "Política de privacidad",
+        "footer.community": "Comunidad",
+        "footer.copy": "© 2026 Vesta. Todos los derechos reservados.",
+        "sheet.close": "Cerrar",
+        "sheet.guide": "Ver la guía",
+        "sheet.download.t": "Descargar para macOS",
+        "sheet.download.b": "Vesta funciona en Mac con Apple Silicon y macOS Ventura, Sonoma, Sequoia o posterior.\n\nCuando se publique el instalador, este botón iniciará la descarga. Puedes preparar CrossOver o usar Wine / Porting Kit gratis.",
+        "sheet.terms.t": "Términos del servicio",
+        "sheet.terms.b": "Vesta es un lanzador para macOS. Tú aportas los programas de Windows y un entorno compatible como CrossOver, Wine o Porting Kit.\n\nLa licencia de Vesta cubre solo el cliente. No incluye motores, juegos ni apps de terceros. Respeta la licencia de cada programa que ejecutes.\n\nLa compatibilidad depende del sistema, del motor y del programa. Nada en esta página garantiza que un .exe concreto vaya a funcionar.",
+        "sheet.privacy.t": "Política de privacidad",
+        "sheet.privacy.b": "El cliente de Vesta se ejecuta en local en tu Mac. Los ejecutables importados, las partidas, los contenedores y los pósters no se suben.\n\nEste sitio solo guarda en el navegador la preferencia de idioma (clave localStorage vesta.lang). No crea una cuenta de seguimiento ni vende información personal.\n\nLas visitas a los sitios de CrossOver, Wine o Porting Kit se rigen por sus propias políticas.",
+        "sheet.community.t": "Comunidad",
+        "sheet.community.b": "La comunidad de Vesta se está formando y pronto habrá un espacio público.\n\nMientras tanto, prepara primero un entorno compatible. CrossOver si buscas el camino más estable, o Wine / Porting Kit si quieres empezar gratis. La biblioteca, los ajustes y el estado se quedan en tu Mac."
+      }
+    };
+
+    const langWrap = document.getElementById("lang-wrap");
+    const langBtn = document.getElementById("lang-btn");
+    const langMenu = document.getElementById("lang-menu");
+    const langCurrent = document.getElementById("lang-current");
+    const mobilePanel = document.getElementById("mobile-panel");
+    const menuBtn = document.getElementById("menu-btn");
+    const sheet = document.getElementById("sheet");
+    const content = document.getElementById("content");
+    const live = document.getElementById("live");
+    const clock = document.getElementById("menu-clock");
+    const fpsEl = document.getElementById("fps");
+    const stage = document.getElementById("stage");
+    const hero = document.getElementById("hero");
+
+    let current = "zh";
+    try {
+      const saved = localStorage.getItem("vesta.lang");
+      if (saved && translations[saved]) current = saved;
+    } catch (err) {
+      current = "zh";
+    }
+
+    function t(key) {
+      const dict = translations[current] || translations.zh;
+      if (Object.prototype.hasOwnProperty.call(dict, key)) return dict[key];
+      return translations.zh[key] || "";
+    }
+
+    function applyLanguage(lang, animate) {
+      if (!translations[lang]) return;
+      current = lang;
+      const run = () => {
+        document.documentElement.lang = LANGS.find((item) => item.id === lang).html;
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          const value = t(key);
+          const attr = el.getAttribute("data-i18n-attr");
+          if (attr) el.setAttribute(attr, value);
+          else el.textContent = value;
+        });
+        const meta = LANGS.find((item) => item.id === lang);
+        langCurrent.textContent = meta.label;
+        document.querySelectorAll(".lang-opt").forEach((btn) => {
+          const on = btn.getAttribute("data-lang") === lang;
+          btn.setAttribute("aria-selected", on ? "true" : "false");
+          const mark = btn.querySelector(".mark");
+          if (mark) mark.classList.toggle("opacity-0", !on);
+        });
+        if (DOWNLOAD_URL) {
+          document.querySelectorAll("[data-download]").forEach((el) => {
+            el.setAttribute("href", DOWNLOAD_URL);
+          });
+        }
+        fillSheet();
+        tick();
+      };
+
+      if (!animate) {
+        run();
+        return;
+      }
+      content.classList.add("is-fading");
+      window.setTimeout(() => {
+        run();
+        content.classList.remove("is-fading");
+        live.textContent = t("a11y.switched");
+      }, 140);
+    }
+
+    function setLangOpen(open) {
+      langMenu.hidden = !open;
+      langBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    function setMobile(open) {
+      mobilePanel.hidden = !open;
+      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    langBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setLangOpen(langMenu.hidden);
+    });
+
+    langMenu.addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-lang]");
+      if (!btn) return;
+      applyLanguage(btn.getAttribute("data-lang"), true);
+      setLangOpen(false);
+      try {
+        localStorage.setItem("vesta.lang", current);
+      } catch (err) {
+        /* language still applies for this visit */
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!langWrap.contains(event.target)) setLangOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        setLangOpen(false);
+        setMobile(false);
+      }
+    });
+
+    menuBtn.addEventListener("click", () => {
+      setMobile(mobilePanel.hidden);
+    });
+
+    mobilePanel.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setMobile(false));
+    });
+
+    document.querySelectorAll(".acc-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = btn.closest(".acc-item");
+        const willOpen = !item.classList.contains("open");
+        document.querySelectorAll(".acc-item").forEach((el) => {
+          el.classList.remove("open");
+          el.querySelector(".acc-btn").setAttribute("aria-expanded", "false");
+        });
+        if (willOpen) {
+          item.classList.add("open");
+          btn.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+
+    function fillSheet() {
+      const type = sheet.dataset.type;
+      if (!type) return;
+      document.getElementById("sheet-title").textContent = t("sheet." + type + ".t");
+      document.getElementById("sheet-body").textContent = t("sheet." + type + ".b");
+      document.getElementById("sheet-guide").classList.toggle("hidden", type !== "download");
+    }
+
+    function openSheet(type) {
+      sheet.dataset.type = type;
+      fillSheet();
+      if (!sheet.open) sheet.showModal();
+    }
+
+    document.querySelectorAll("[data-modal]").forEach((el) => {
+      el.addEventListener("click", () => openSheet(el.getAttribute("data-modal")));
+    });
+
+    document.querySelectorAll("[data-download]").forEach((el) => {
+      el.addEventListener("click", (event) => {
+        if (DOWNLOAD_URL) return;
+        event.preventDefault();
+        openSheet("download");
+      });
+    });
+
+    document.getElementById("sheet-close").addEventListener("click", () => sheet.close());
+    document.getElementById("sheet-x").addEventListener("click", () => sheet.close());
+    document.getElementById("sheet-guide").addEventListener("click", () => sheet.close());
+
+    const sections = ["features", "guide", "pricing", "faq"];
+    const navLinks = document.querySelectorAll("header .nav-link");
+    function spy() {
+      let active = "";
+      sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.getBoundingClientRect().top < 140) active = id;
+      });
+      navLinks.forEach((link) => {
+        const on = link.getAttribute("href") === "#" + active;
+        if (on) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      });
+    }
+    document.addEventListener("scroll", spy, { passive: true });
+
+    function tick() {
+      const meta = LANGS.find((item) => item.id === current);
+      clock.textContent = new Date().toLocaleTimeString(meta.locale, {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+    window.setInterval(tick, 15000);
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduceMotion) {
+      let fps = 118;
+      window.setInterval(() => {
+        fps += Math.random() > 0.5 ? 1 : -1;
+        if (fps > 126) fps = 126;
+        if (fps < 108) fps = 108;
+        fpsEl.textContent = String(fps);
+      }, 900);
+
+      hero.addEventListener("pointermove", (event) => {
+        const rect = hero.getBoundingClientRect();
+        hero.style.setProperty("--mx", event.clientX - rect.left + "px");
+        hero.style.setProperty("--my", event.clientY - rect.top + "px");
+      });
+
+      const visual = document.getElementById("hero-visual");
+      visual.addEventListener("pointermove", (event) => {
+        if (window.matchMedia("(pointer: coarse)").matches) return;
+        const rect = visual.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        stage.style.transform = "rotateX(" + (-y * 6).toFixed(2) + "deg) rotateY(" + (x * 8).toFixed(2) + "deg)";
+      });
+      visual.addEventListener("pointerleave", () => {
+        stage.style.transform = "";
+      });
+    }
+
+    applyLanguage(current, false);
+    document.documentElement.classList.remove("i18n-pending");
+    spy();
+  </script>
+</body>
+</html>
